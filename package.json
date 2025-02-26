@@ -1,0 +1,31 @@
+{
+  "name": "pw-api-plugin",
+  "version": "1.0.0",
+  "description": "Playwright plugin for comprehensive API testing and presenting results in a user-friendly manner in the Playwright UI.",
+  "main": "src/index.ts",
+  "types": "src/index.d.ts",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sclavijosuero/pw-api-plugin.git"
+  },
+  "keywords": [
+    "playwright",
+    "plugin",
+    "api",
+    "testing"
+  ],
+  "author": "Sebastian Clavijo Suero",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sclavijosuero/pw-api-plugin/issues"
+  },
+  "homepage": "https://github.com/sclavijosuero/pw-api-plugin#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.50.1",
+    "@types/node": "^22.13.5"
+  },
+  "dependencies": {
+    "highlight.js": "^11.11.1"
+  }
+}
