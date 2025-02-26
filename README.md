@@ -282,5 +282,8 @@ Thank you for your support!
 
 ## Changelog
 
+### [1.0.1]
+- Fix depedencies with Playwright
+
 ### [1.0.0]
 - Initial release.
