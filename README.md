@@ -266,6 +266,8 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 First off, thanks for taking the time to contribute!
 
+Special thank you to **[Mohammad Monfared](https://www.linkedin.com/in/monfared/ "Mohammad Monfared")** for his amazing contribution to this plugin. Man you rock!!! 🤟
+
 To contribute, please follow the best practices promoted by GitHub on the [Contributing to a project](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project "Contributing to a project") page.
 
 And if you like the project but just don't have the time to contribute, that's fine. There are other easy ways to support the project and show your appreciation, which we would also be very happy about:
@@ -280,8 +282,16 @@ And if you like the project but just don't have the time to contribute, that's f
 Thank you for your support!
 
 
+## Colaborators
+
+- **https://github.com/mmonfared (Mohammad Monfared)**
+
+
 ## Changelog
 
+### [1.0.2]
+- Full support for Typescrypt  (contribution by [Mohammad Monfared](https://github.com/w4dd325 "Mohammad Monfared"))
+  
 ### [1.0.1]
 - Fix depedencies with Playwright
 

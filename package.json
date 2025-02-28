@@ -1,6 +1,6 @@
 {
   "name": "pw-api-plugin",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Playwright plugin for comprehensive API testing and presenting results in a user-friendly manner in the Playwright UI.",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
