@@ -1,5 +1,5 @@
 import hljs from 'highlight.js/lib/common';
-import packageJSON from '../package.json';
+import * as packageJSON from '../package.json'
 import { APIRequestContext, Page, APIResponse, Request } from '@playwright/test';
 
 // Obtain the version of highlight.js from package.json
@@ -134,6 +134,7 @@ export const apiHead = async ({ request, page }: { request: APIRequestContext; p
 // PRIVATE FUNCTIONS
 // **********************************************************************
 
+
 /**
  * Adds an API card to the UI by updating the page content with the API response.
  *
@@ -183,8 +184,11 @@ const addApiCallHtml = async (currentHtml: string, apiCallHtml: string): Promise
  * @returns {Promise<string>} A promise that resolves to a string containing the HTML representation of the API call.
  */
 const createApiCallHtml = async (response: APIResponse, options?: object): Promise<string> => {
+    // @ts-ignore
     const requestMethod = (options && options['method'] ? options['method'] : 'GET').toUpperCase();
+    // @ts-ignore
     const requestHeadersJson = options && options['headers'] ? formatJson(options['headers']) : undefined;
+    // @ts-ignore
     const requestBodyJson = options && options['body'] ? formatJson(options['body']) : undefined;
 
     const responseStatus = response.status();
@@ -285,3 +289,5 @@ const inLineStyles = `<style>
     .pw-api-5xx { color: rgb(160, 20, 28)!important; }
     .hljs { background: rgb(238, 251, 255); text-wrap: wrap; padding: 6px; margin: 8px 0 15px 10px; border-radius: 6px; line-height: 1.5em; }
 </style>`
+
+export {}
