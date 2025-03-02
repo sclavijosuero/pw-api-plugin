@@ -289,11 +289,16 @@ Thank you for your support!
 
 ## Changelog
 
+### [1.1.0]
+- Added information about response headers.
+- Support for tabs in the response and request body/headers to enhance data clarity.
+- Fix for an issue where the response does not return a body.
+
 ### [1.0.2]
-- Full support for Typescript  (contribution by [Mohammad Monfared](https://github.com/w4dd325 "Mohammad Monfared"))
+- Full support for Typescript  (contribution by [Mohammad Monfared](https://github.com/w4dd325 "Mohammad Monfared")).
   
 ### [1.0.1]
-- Fix depedencies with Playwright
+- Fix depedencies with Playwright.
 
 ### [1.0.0]
 - Initial release.

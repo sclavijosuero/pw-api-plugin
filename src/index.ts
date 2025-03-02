@@ -184,6 +184,10 @@ const addApiCallHtml = async (currentHtml: string, apiCallHtml: string): Promise
  * @returns {Promise<string>} A promise that resolves to a string containing the HTML representation of the API call.
  */
 const createApiCallHtml = async (response: APIResponse, options?: object): Promise<string> => {
+    const callId = Math.floor(10000000 + Math.random() * 90000000);
+
+    // REQUEST
+    // ------------------
     // @ts-ignore
     const requestMethod = (options && options['method'] ? options['method'] : 'GET').toUpperCase();
     // @ts-ignore
@@ -191,45 +195,65 @@ const createApiCallHtml = async (response: APIResponse, options?: object): Promi
     // @ts-ignore
     const requestBodyJson = options && options['body'] ? formatJson(options['body']) : undefined;
 
-    const responseStatus = response.status();
-    const statusClass = responseStatus.toString().charAt(0) + 'xx';
-
-    let responseBody;
-    if (requestMethod !== 'HEAD') {
-        responseBody = await response.json();
-    }
-
-    const responseBodyJson = responseBody ? formatJson(responseBody) : undefined;
-
     const url = response.url();
 
-    // If decided to add response header to the API call card
-    // const responseHeaders = response.headers();
-    // const responseHeadersJson = responseHeaders ? formatJson(responseHeaders) : undefined;
+    // RESPONSE
+    // ------------------
+    const responseStatus = response.status();
+    const statusClass = responseStatus.toString().charAt(0) + 'xx';
+    const responseHeaders = response.headers();
+    const responseHeadersJson = responseHeaders ? formatJson(responseHeaders) : undefined;
 
-    // Add to the returned html string after <br>
-    // ${responseHeadersJson ? `<label class="property">HEADERS:</label>
-    //     <pre class="hljs">${responseHeadersJson}</pre>` : ''}
+    let responseBody;
+    if ((await response.text()) !== "") {
+        responseBody = await response.json();
+    }
+    const responseBodyJson = responseBody ? formatJson(responseBody) : undefined;
 
+    // Generate the HTML content for the API call (request and response)
     return `<div class="pw-api-call pw-card">
         <div class="pw-api-request">
             <label class="title">REQUEST - </label>
             <label class="title-property">(METHOD: ${requestMethod})</label>
             </br>
-            <label class="property">URL:</label>
+
+            <label class="property">URL</label>
             <pre class="hljs pw-api-hljs">${url}</b></pre>
-            ${requestHeadersJson ? `<label class="property">HEADERS:</label>
-            <pre class="hljs">${requestHeadersJson}</pre>` : ''}
-            ${requestBodyJson ? `<label class="property">BODY:</label>
-            <pre class="hljs">${requestBodyJson}</pre>` : ''}
+            <div class="pw-req-data-tabs-${callId} pw-data-tabs">
+                ${requestBodyJson ? 
+                `<input type="radio" name="pw-req-data-tabs-${callId}" id="pw-req-body-${callId}" checked="checked">
+                <label for="pw-req-body-${callId}" class="property pw-tab-label">BODY</label>
+                <div class="pw-tab-content">
+                    <pre class="hljs">${requestBodyJson}</pre>
+                </div>` : ''}
+
+                ${requestHeadersJson ? 
+                `<input type="radio" name="pw-req-data-tabs-${callId}" id="pw-req-headers-${callId}" ${requestBodyJson ? '' : 'checked="checked"'}>
+                <label for="pw-req-headers-${callId}" class="property pw-tab-label">HEADERS</label>
+                <div class="pw-tab-content">
+                    <pre class="hljs">${requestHeadersJson}</pre>
+                </div>` : ''}
+            </div>
         </div>
         <hr>
         <div class="pw-api-response">
             <label class="title">RESPONSE - </label>
             <label class="title-property pw-api-${statusClass}">(STATUS: ${responseStatus})</label>
             <br>
-            ${responseBodyJson ? `<label class="property">BODY:</label>
-            <pre class="hljs">${responseBodyJson}</pre>` : ''}
+            <div class="pw-res-data-tabs-${callId} pw-data-tabs">
+                ${responseBodyJson ?
+                `<input type="radio" name="pw-res-data-tabs-${callId}" id="pw-res-body-${callId}" checked="checked">
+                <label for="pw-res-body-${callId}" class="property pw-tab-label">BODY</label>
+                <div class="pw-tab-content">
+                    <pre class="hljs">${responseBodyJson}</pre>
+                </div>` : ''}
+
+                ${responseHeadersJson ? 
+                `<input type="radio" name="pw-res-data-tabs-${callId}" id="pw-res-headers-${callId}" ${responseBodyJson ? '' : 'checked="checked"'}>
+                <label for="pw-res-headers-${callId}" class="property pw-tab-label">HEADERS</label>
+                <div class="pw-tab-content">
+                    <pre class="hljs">${responseHeadersJson}</pre>
+                </div>` : ''}
         </div>
     </div>`
 }
@@ -280,14 +304,22 @@ const inLineStyles = `<style>
     .pw-api-response { text-align: left; margin-top: 1em; }
     .pw-api-request .title, .pw-api-response .title { font-weight: 800; font-size: 1.8em; line-height: 2em; padding-bottom: 18px; }
     .pw-api-request .title-property, .pw-api-response .title-property { color: rgb(60, 60, 60); font-weight: 800; font-size: 1.3em; }
-    .pw-api-request .property, .pw-api-response .property { color: rgb(70, 70, 70); font-weight: 800; font-size: 1.2em;}
+    .property { padding: 10px 0px; cursor: pointer;display: flex; color: rgb(70, 70, 70); font-weight: 800; font-size: 1.2em; margin: 10px 0 0 10px; border-radius: 6px 6px 0 0; }
     .pw-api-hljs { font-size: 1.1em;}
     .pw-api-1xx { color: rgb(3, 152, 158)!important; }
     .pw-api-2xx { color: rgb(0, 128, 54)!important; }
     .pw-api-3xx { color: rgb(217, 98, 32)!important; }
     .pw-api-4xx { color: rgb(200, 0, 0)!important; }
     .pw-api-5xx { color: rgb(160, 20, 28)!important; }
-    .hljs { background: rgb(238, 251, 255); text-wrap: wrap; padding: 6px; margin: 8px 0 15px 10px; border-radius: 6px; line-height: 1.5em; }
+    .hljs { background: rgb(238, 251, 255); text-wrap: wrap; padding: 6px; margin: 1px 0 15px 10px; border-radius: 6px 6px 6px 6px; line-height: 1.5em; }
+
+    .pw-always-selected { flex-wrap: wrap; background: rgb(238, 251, 255); }
+    .pw-data-tabs { display: flex; flex-wrap: wrap; }
+    .pw-data-tabs [type="radio"] { display: none; }
+    .pw-tab-label { padding: 10px 16px; cursor: pointer; border-width: 1px 1px 0 1px; border-radius: 6px 6px 0 0; border-color: rgb(238, 251, 255); border-style: solid;}
+    .pw-tab-content { width: 100%; order: 1; display: none; }
+    .pw-data-tabs [type="radio"]:checked + label + .pw-tab-content { display: block; }
+    .pw-data-tabs [type="radio"]:checked + label { background: rgb(238, 251, 255); border: 0px;}
 </style>`
 
 export {}
