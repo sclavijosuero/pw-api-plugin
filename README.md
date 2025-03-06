@@ -194,7 +194,7 @@ test.describe('API Tests for https://jsonplaceholder.typicode.com', () => {
 
         // ✔️ Example of apiPost (with request body and request headers)
         const responsePost = await apiPost({ request, page }, `${baseUrl}/posts`, {
-            body: {
+            data: {
                 title: 'foo',
                 body: 'bar',
                 userId: 1,
@@ -210,7 +210,7 @@ test.describe('API Tests for https://jsonplaceholder.typicode.com', () => {
 
         // ✔️ Example of apiPut (with request body and request headers)
         const responsePut = await apiPut({ request, page }, 'https://jsonplaceholder.typicode.com/posts/1', {
-            body: {
+            data: {
                 id: 1,
                 title: 'foo',
                 body: 'bar',
@@ -227,7 +227,7 @@ test.describe('API Tests for https://jsonplaceholder.typicode.com', () => {
 
         // ✔️ Example of apiPatch (with request body and request headers)
         const responsePatch = await apiPatch({ request, page }, 'https://jsonplaceholder.typicode.com/posts/1', {
-            body: {
+            data: {
                 title: 'foo',
             },
             headers: {
