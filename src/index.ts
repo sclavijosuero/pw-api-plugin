@@ -193,7 +193,7 @@ const createApiCallHtml = async (response: APIResponse, options?: object): Promi
     // @ts-ignore
     const requestHeadersJson = options && options['headers'] ? formatJson(options['headers']) : undefined;
     // @ts-ignore
-    const requestBodyJson = options && options['body'] ? formatJson(options['body']) : undefined;
+    const requestBodyJson = options && options['data'] ? formatJson(options['data']) : undefined;
 
     const url = response.url();
 

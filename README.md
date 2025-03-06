@@ -289,6 +289,9 @@ Thank you for your support!
 
 ## Changelog
 
+### [1.1.1]
+- Fixed issue with request body not showing in the tab.
+
 ### [1.1.0]
 - Added information about response headers.
 - Support for tabs in the response and request body/headers to enhance data clarity.
