@@ -288,7 +288,7 @@ Thank you for your support!
 ## Changelog
 
 ### [1.1.2]
-- Fixed typo in documewntation and examples.
+- Fixed typo in documentation and examples.
 
 ### [1.1.1]
 - Fixed issue with request body not showing in the tab.
