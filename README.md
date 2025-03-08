@@ -138,7 +138,7 @@ Sends a HEAD request to the specified URL and adds the API response to the UI.
 
 ### How to Use this Library
 
-This library introduces new functions for the Playwright request methods: `get`, `post`, `put`, `patch`, `delete`, `head` and `fetch` within the `APIRequestContext` class. These methods display API request and response information in the **Playwright UI**.
+This library introduces new functions for the Playwright request methods: `fetch`, `get`, `post`, `put`, `patch`, `delete`, and `head` within the `APIRequestContext` class. These methods display API request and response information in the **Playwright UI**.
 
 To utilize these functions, include the following import statement at the top of your test file:
 
@@ -286,6 +286,9 @@ Thank you for your support!
 
 
 ## Changelog
+
+### [1.1.2]
+- Fixed typo in documewntation and examples.
 
 ### [1.1.1]
 - Fixed issue with request body not showing in the tab.
