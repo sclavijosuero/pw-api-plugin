@@ -16,8 +16,6 @@ Playwright plugin for comprehensive API testing and presenting results in a user
 npm install -D pw-api-plugin
 ```
 
-## Compatibility
-
 
 ## Configuration
 
@@ -30,7 +28,7 @@ npm install -D pw-api-plugin
 
 ## API Reference
 
-### ✔️ apiFetch
+### ✔️ apiFetch({ request, page }, urlOrRequest, options)
 
 **Description:**  
 Fetches data from the API and adds the API response to the UI.
@@ -45,7 +43,7 @@ Fetches data from the API and adds the API response to the UI.
 - **Returns:**  
   - A `Promise<APIResponse>` that resolves to the APIResponse.
 
-### ✔️ apiGet
+### ✔️ apiGet({ request, page }, url, options)
 
 **Description:**  
 Makes a GET request to the specified URL and adds the API response to the UI.
@@ -60,7 +58,7 @@ Makes a GET request to the specified URL and adds the API response to the UI.
 - **Returns:**  
   - A `Promise<APIResponse>` that resolves to the APIResponse.
 
-### ✔️ apiPost
+### ✔️ apiPost({ request, page }, url, options)
 
 **Description:**  
 Sends a POST request to the specified URL and adds the API response to the UI.
@@ -75,7 +73,7 @@ Sends a POST request to the specified URL and adds the API response to the UI.
 - **Returns:**  
   - A `Promise<APIResponse>` that resolves to the APIResponse.
 
-### ✔️ apiPut
+### ✔️ apiPut({ request, page }, url, options)
 
 **Description:**  
 Sends a PUT request to the specified URL and adds the API response to the UI.
@@ -90,7 +88,7 @@ Sends a PUT request to the specified URL and adds the API response to the UI.
 - **Returns:**  
   - A `Promise<APIResponse>` that resolves to the APIResponse.
 
-### ✔️ apiDelete
+### ✔️ apiDelete({ request, page }, url, options)
 
 **Description:**  
 Sends a DELETE request to the specified URL and adds the API response to the UI.
@@ -105,7 +103,7 @@ Sends a DELETE request to the specified URL and adds the API response to the UI.
 - **Returns:**  
   - A `Promise<APIResponse>` that resolves to the APIResponse.
 
-### ✔️ apiPatch
+### ✔️ apiPatch({ request, page }, url, options)
 
 **Description:**  
 Sends a PATCH request to the specified URL and updates the UI with the response.
@@ -120,7 +118,7 @@ Sends a PATCH request to the specified URL and updates the UI with the response.
 - **Returns:**  
   - A `Promise<APIResponse>` that resolves to the API response.
 
-### ✔️ apiHead
+### ✔️ apiHead({ request, page }, url, options)
 
 **Description:**  
 Sends a HEAD request to the specified URL and adds the API response to the UI.
