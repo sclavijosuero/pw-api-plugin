@@ -1,12 +1,13 @@
 # pw-api-plugin
 
-Playwright plugin for comprehensive API testing and presenting results in a user-friendly manner in the Playwright UI.
+Playwright plugin for comprehensive API testing and presenting results in a user-friendly manner in the Playwright UI and HTML Report.
 
 ## Main Features
 
-- Lightweight library introducing new functions: `apiGet`, `apiPost`, `apiPut`, `apiPatch`, `apiDelete`, `apiHead` and `apiFetch` for testing API requests in the Playwright test framework.
-- These functions display each API request and response information in the **Playwright UI**.
-- You can use multiple calls to these functions within the same test if you need to test multiple endpoints.
+- Lightweight library introducing new functions: `apiGet`, `apiPost`, `apiPut`, `apiPatch`, `apiDelete`, `apiHead` and `apiFetch`, designed for testing API requests within the Playwright test framework.
+- These functions display detailed API request and response information in the  **Playwright UI**
+- Each API request and response will also be included as an attachment in the **HTML Report**. _(Introduced in v1.2.0)_
+- The functions support multiple calls within a single test, allowing testing of multiple endpoints as part of the same scenario.
 
 ![Overview](videos/overview.gif)
 
@@ -255,6 +256,26 @@ test.describe('API Tests for https://jsonplaceholder.typicode.com', () => {
 })
 ```
 
+
+### Presentation of API Results
+
+#### In Playwright UI
+
+![Overview and details of API requests and responses presented in the Playwright UI](images/overview.png)
+
+_Overview and details of API requests and responses presented in the Playwright UI._
+
+#### In HTML Report
+
+![Overview and details of API requests and responses presented in the HTML Report](images/html-report1.png)
+
+_Overview and details of API requests and responses presented in the Playwright UI._
+
+![Details of an API request, along with its response, are included as an attachment in the HTML Report](images/html-report2.png)
+
+_Details of an API request, along with its response, are included as an attachment in the HTML Report._
+
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
@@ -286,6 +307,10 @@ Thank you for your support!
 
 
 ## Changelog
+
+### [1.2.0]
+- API requests and results included in HTML report as attachment.
+- Group all the actions of the plugin API call within a `test.step()`
 
 ### [1.1.2]
 - Fixed typo in documentation and examples.

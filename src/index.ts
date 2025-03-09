@@ -1,6 +1,6 @@
 import hljs from 'highlight.js/lib/common';
 import * as packageJSON from '../package.json'
-import { APIRequestContext, Page, APIResponse, Request } from '@playwright/test';
+import { APIRequestContext, Page, APIResponse, Request, test } from '@playwright/test';
 
 // Obtain the version of highlight.js from package.json
 const hljsVersion: string = packageJSON['dependencies']['highlight.js'].replace(/[\^~]/g, '');
@@ -21,10 +21,11 @@ const hljsVersion: string = packageJSON['dependencies']['highlight.js'].replace(
  * @returns {Promise<APIResponse>} - A promise that resolves to the APIResponse.
  */
 export const apiFetch = async ({ request, page }: { request: APIRequestContext; page: Page }, urlOrRequest: string | Request, options?: object): Promise<APIResponse> => {
-    const response: APIResponse = await request.fetch(urlOrRequest, options);
-    await addApiCardToUI(page, response, options);
-
-    return response;
+    return await test.step(`Api request - FETCH - ${urlOrRequest}`, async () => {
+        const response: APIResponse = await request.fetch(urlOrRequest, options);
+        await addApiCardToUI(page, response, options, true);
+        return response;
+    });
 };
 
 /**
@@ -38,10 +39,11 @@ export const apiFetch = async ({ request, page }: { request: APIRequestContext; 
  * @returns {Promise<APIResponse>} - A promise that resolves to the APIResponse.
  */
 export const apiGet = async ({ request, page }: { request: APIRequestContext; page: Page }, url: string, options?: object): Promise<APIResponse> => {
-    const response: APIResponse = await request.get(url, options);
-    await addApiCardToUI(page, response, { method: 'GET', ...options });
-
-    return response;
+    return await test.step(`Api request - GET - ${url}`, async () => {
+        const response: APIResponse = await request.get(url, options);
+        await addApiCardToUI(page, response, { method: 'GET', ...options });
+        return response;
+    })
 };
 
 /**
@@ -55,10 +57,12 @@ export const apiGet = async ({ request, page }: { request: APIRequestContext; pa
  * @returns {Promise<APIResponse>} - A promise that resolves to the APIResponse.
  */
 export const apiPost = async ({ request, page }: { request: APIRequestContext; page: Page }, url: string, options?: object): Promise<APIResponse> => {
-    const response: APIResponse = await request.post(url, options);
-    await addApiCardToUI(page, response, { method: 'POST', ...options });
+    return await test.step(`Api request - POST - ${url}`, async () => {
+        const response: APIResponse = await request.post(url, options);
+        await addApiCardToUI(page, response, { method: 'POST', ...options });
 
-    return response;
+        return response;
+    })
 };
 
 /**
@@ -72,10 +76,12 @@ export const apiPost = async ({ request, page }: { request: APIRequestContext; p
  * @returns {Promise<APIResponse>} - A promise that resolves to the APIResponse.
  */
 export const apiPut = async ({ request, page }: { request: APIRequestContext; page: Page }, url: string, options?: object): Promise<APIResponse> => {
-    const response: APIResponse = await request.put(url, options);
-    await addApiCardToUI(page, response, { method: 'PUT', ...options });
+    return await test.step(`Api request - PUT - ${url}`, async () => {
+        const response: APIResponse = await request.put(url, options);
+        await addApiCardToUI(page, response, { method: 'PUT', ...options });
 
-    return response;
+        return response;
+    })
 };
 
 /**
@@ -89,10 +95,12 @@ export const apiPut = async ({ request, page }: { request: APIRequestContext; pa
  * @returns {Promise<APIResponse>} - A promise that resolves to the APIResponse.
  */
 export const apiDelete = async ({ request, page }: { request: APIRequestContext; page: Page }, url: string, options?: object): Promise<APIResponse> => {
-    const response: APIResponse = await request.delete(url, options);
-    await addApiCardToUI(page, response, { method: 'DELETE', ...options });
+    return await test.step(`Api request - DELETE - ${url}`, async () => {
+        const response: APIResponse = await request.delete(url, options);
+        await addApiCardToUI(page, response, { method: 'DELETE', ...options });
 
-    return response;
+        return response;
+    })
 };
 
 /**
@@ -106,10 +114,12 @@ export const apiDelete = async ({ request, page }: { request: APIRequestContext;
  * @returns {Promise<APIResponse>} - A promise that resolves to the API response.
  */
 export const apiPatch = async ({ request, page }: { request: APIRequestContext; page: Page }, url: string, options?: object): Promise<APIResponse> => {
-    const response: APIResponse = await request.patch(url, options);
-    await addApiCardToUI(page, response, { method: 'PATCH', ...options });
+    return await test.step(`Api request - PATCH - ${url}`, async () => {
+        const response: APIResponse = await request.patch(url, options);
+        await addApiCardToUI(page, response, { method: 'PATCH', ...options });
 
-    return response;
+        return response;
+    })
 };
 
 /**
@@ -123,10 +133,12 @@ export const apiPatch = async ({ request, page }: { request: APIRequestContext; 
  * @returns {Promise<APIResponse>} - A promise that resolves to the API response.
  */
 export const apiHead = async ({ request, page }: { request: APIRequestContext; page: Page }, url: string, options?: object): Promise<APIResponse> => {
-    const response: APIResponse = await request.head(url, options);
-    await addApiCardToUI(page, response, { method: 'HEAD', ...options });
+    return await test.step(`Api request - HEAD - ${url}`, async () => {
+        const response: APIResponse = await request.head(url, options);
+        await addApiCardToUI(page, response, { method: 'HEAD', ...options });
 
-    return response;
+        return response;
+    })
 };
 
 
@@ -143,11 +155,12 @@ export const apiHead = async ({ request, page }: { request: APIRequestContext; p
  * @param {object} [options] - Optional fetch options.
  * @returns A `Promise` that resolves to `void` when the page content has been updated.
  */
-const addApiCardToUI = async (page: Page, response: APIResponse, options?: object): Promise<void> => {
+const addApiCardToUI = async (page: Page, response: APIResponse, options?: object, fetch?: boolean): Promise<void> => {
+
     const emptyPageHtml = '<html><head></head><body></body></html>';
     let html: string;
 
-    const apiCallHtml = await createApiCallHtml(response, options);
+    const apiCallHtml = await createApiCallHtml(response, options, fetch);
 
     const currentHtml = await page.content();
     if (currentHtml === emptyPageHtml) {
@@ -157,6 +170,7 @@ const addApiCardToUI = async (page: Page, response: APIResponse, options?: objec
     }
 
     await page.setContent(html);
+
 }
 
 /**
@@ -183,8 +197,9 @@ const addApiCallHtml = async (currentHtml: string, apiCallHtml: string): Promise
  * @param {object} [options.body] - The body sent with the request.
  * @returns {Promise<string>} A promise that resolves to a string containing the HTML representation of the API call.
  */
-const createApiCallHtml = async (response: APIResponse, options?: object): Promise<string> => {
+const createApiCallHtml = async (response: APIResponse, options?: object, fetch?: boolean): Promise<string> => {
     const callId = Math.floor(10000000 + Math.random() * 90000000);
+    const fetchLabel = fetch ? ' [From a FETCH]' : '';
 
     // REQUEST
     // ------------------
@@ -210,28 +225,27 @@ const createApiCallHtml = async (response: APIResponse, options?: object): Promi
     }
     const responseBodyJson = responseBody ? formatJson(responseBody) : undefined;
 
-    // Generate the HTML content for the API call (request and response)
-    return `<div class="pw-api-call pw-card">
+    const apiCallHtml = `<div class="pw-api-call pw-card">
         <div class="pw-api-request">
             <label class="title">REQUEST - </label>
-            <label class="title-property">(METHOD: ${requestMethod})</label>
+            <label class="title-property">(METHOD: ${requestMethod}${fetchLabel})</label>
             </br>
 
             <label class="property">URL</label>
             <pre class="hljs pw-api-hljs">${url}</b></pre>
             <div class="pw-req-data-tabs-${callId} pw-data-tabs">
-                ${requestBodyJson ? 
-                `<input type="radio" name="pw-req-data-tabs-${callId}" id="pw-req-body-${callId}" checked="checked">
+                ${requestBodyJson ?
+            `<input type="radio" name="pw-req-data-tabs-${callId}" id="pw-req-body-${callId}" checked="checked">
                 <label for="pw-req-body-${callId}" class="property pw-tab-label">BODY</label>
                 <div class="pw-tab-content">
-                    <pre class="hljs">${requestBodyJson}</pre>
+                    <pre class="hljs" id="req-body-${callId}">${requestBodyJson}</pre>
                 </div>` : ''}
 
-                ${requestHeadersJson ? 
-                `<input type="radio" name="pw-req-data-tabs-${callId}" id="pw-req-headers-${callId}" ${requestBodyJson ? '' : 'checked="checked"'}>
+                ${requestHeadersJson ?
+            `<input type="radio" name="pw-req-data-tabs-${callId}" id="pw-req-headers-${callId}" ${requestBodyJson ? '' : 'checked="checked"'}>
                 <label for="pw-req-headers-${callId}" class="property pw-tab-label">HEADERS</label>
                 <div class="pw-tab-content">
-                    <pre class="hljs">${requestHeadersJson}</pre>
+                    <pre class="hljs" id="req-headers-${callId}">${requestHeadersJson}</pre>
                 </div>` : ''}
             </div>
         </div>
@@ -242,21 +256,37 @@ const createApiCallHtml = async (response: APIResponse, options?: object): Promi
             <br>
             <div class="pw-res-data-tabs-${callId} pw-data-tabs">
                 ${responseBodyJson ?
-                `<input type="radio" name="pw-res-data-tabs-${callId}" id="pw-res-body-${callId}" checked="checked">
+            `<input type="radio" name="pw-res-data-tabs-${callId}" id="pw-res-body-${callId}" checked="checked">
                 <label for="pw-res-body-${callId}" class="property pw-tab-label">BODY</label>
                 <div class="pw-tab-content">
-                    <pre class="hljs">${responseBodyJson}</pre>
+                    <pre class="hljs" id="res-body-${callId}">${responseBodyJson}</pre>
                 </div>` : ''}
 
-                ${responseHeadersJson ? 
-                `<input type="radio" name="pw-res-data-tabs-${callId}" id="pw-res-headers-${callId}" ${responseBodyJson ? '' : 'checked="checked"'}>
+                ${responseHeadersJson ?
+            `<input type="radio" name="pw-res-data-tabs-${callId}" id="pw-res-headers-${callId}" ${responseBodyJson ? '' : 'checked="checked"'}>
                 <label for="pw-res-headers-${callId}" class="property pw-tab-label">HEADERS</label>
                 <div class="pw-tab-content">
-                    <pre class="hljs">${responseHeadersJson}</pre>
+                    <pre class="hljs" id="res-headers-${callId}">${responseHeadersJson}</pre>
                 </div>` : ''}
         </div>
     </div>`
+
+    test.info().attach(`Api request - ${requestMethod}${fetchLabel} - ${url}`, {
+        body: `<html>
+            <head>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${hljsVersion}/styles/vs.min.css"/>
+                ${inLineStyles}
+            </head>
+            <body>
+                ${apiCallHtml}
+            </body>
+        </html>`,
+        contentType: 'text/html'
+    })
+
+    return apiCallHtml;
 }
+
 
 /**
  * Generates a simple HTML page as a string.
@@ -322,4 +352,4 @@ const inLineStyles = `<style>
     .pw-data-tabs [type="radio"]:checked + label { background: rgb(238, 251, 255); border: 0px;}
 </style>`
 
-export {}
+export { }
