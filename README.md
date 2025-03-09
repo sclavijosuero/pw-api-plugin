@@ -257,7 +257,7 @@ test.describe('API Tests for https://jsonplaceholder.typicode.com', () => {
 ```
 
 
-### Presentation of API Results
+### Presentation of API Call Results
 
 #### In Playwright UI
 
@@ -269,7 +269,7 @@ _Overview and details of API requests and responses presented in the Playwright 
 
 ![Overview and details of API requests and responses presented in the HTML Report](images/html-report1.png)
 
-_Overview and details of API requests and responses presented in the Playwright UI._
+_Overview and details of API requests and responses presented in the HTML Report._
 
 ![Details of an API request, along with its response, are included as an attachment in the HTML Report](images/html-report2.png)
 
