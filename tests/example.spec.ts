@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { apiFetch, apiGet, apiPost, apiPut, apiDelete, apiPatch, apiHead } from '../src/index';
+
+import pwApi from '../src/pwApi';
 
 
 test.describe('API Tests for https://jsonplaceholder.typicode.com', () => {
@@ -8,20 +9,20 @@ test.describe('API Tests for https://jsonplaceholder.typicode.com', () => {
 
     test('Testing API Endpoints - Perform Single Call for Each CRUD Operation (GET, HEAD, POST, PUT, PATCH, DELETE)', async ({ request, page }) => {
 
-        // ✔️ Example of apiGet
-        const responseGet = await apiGet({ request, page }, `${baseUrl}/posts/1`);
+        // ✔️ Example of get
+        const responseGet = await pwApi.get({ request, page }, `${baseUrl}/posts/1`);
         expect(responseGet.status()).toBe(200);
         const responseBodyGet = await responseGet.json();
         expect(responseBodyGet).toHaveProperty('id', 1);
 
 
-        // ✔️ Example of apiHead
-        const responseHead = await apiHead({ request, page }, `${baseUrl}/posts/1`);
+        // ✔️ Example of head
+        const responseHead = await pwApi.head({ request, page }, `${baseUrl}/posts/1`);
         expect(responseHead.status()).toBe(200);
 
 
-        // ✔️ Example of apiPost (with request body and request headers)
-        const responsePost = await apiPost({ request, page }, `${baseUrl}/posts`, {
+        // ✔️ Example of post (with request body and request headers)
+        const responsePost = await pwApi.post({ request, page }, `${baseUrl}/posts`, {
             data: {
                 title: 'foo',
                 body: 'bar',
@@ -36,8 +37,8 @@ test.describe('API Tests for https://jsonplaceholder.typicode.com', () => {
         expect(responseBodyPost).toHaveProperty('id', 101);
 
 
-        // ✔️ Example of apiPut (with request body and request headers)
-        const responsePut = await apiPut({ request, page }, 'https://jsonplaceholder.typicode.com/posts/1', {
+        // ✔️ Example of put (with request: body, headers, params, timeout, maxRetries)
+        const responsePut = await pwApi.put({ request, page }, 'https://jsonplaceholder.typicode.com/posts/1', {
             data: {
                 id: 1,
                 title: 'foo',
@@ -47,14 +48,17 @@ test.describe('API Tests for https://jsonplaceholder.typicode.com', () => {
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',
             },
+            params: { _limit: 1000, _details: true },
+            timeout: 2000,
+            maxRetries: 1
         });
         expect(responsePut.ok()).toBeTruthy();
         const responseBodyPut = await responsePut.json();
         expect(responseBodyPut).toHaveProperty('id', 1);
 
 
-        // ✔️ Example of apiPatch (with request body and request headers)
-        const responsePatch = await apiPatch({ request, page }, 'https://jsonplaceholder.typicode.com/posts/1', {
+        // ✔️ Example of patch (with request body and request headers)
+        const responsePatch = await pwApi.patch({ request, page }, 'https://jsonplaceholder.typicode.com/posts/1', {
             data: {
                 title: 'hello',
             },
@@ -65,8 +69,8 @@ test.describe('API Tests for https://jsonplaceholder.typicode.com', () => {
         expect(responsePatch.ok()).toBeTruthy();
 
 
-        // ✔️ Example for apiDelete
-        const responseDelete = await apiDelete({ request, page }, 'https://jsonplaceholder.typicode.com/posts/1');
+        // ✔️ Example for delete
+        const responseDelete = await pwApi.delete({ request, page }, 'https://jsonplaceholder.typicode.com/posts/1');
         expect(responseDelete.ok()).toBeTruthy();
 
     })
@@ -74,12 +78,20 @@ test.describe('API Tests for https://jsonplaceholder.typicode.com', () => {
 
     test('Verify Single API Call Using apiFetch with Default GET Method', async ({ request, page }) => {
 
-        // ✔️ Example of apiFetch (default GET)
-        const responseFetch = await apiFetch({ request, page }, `${baseUrl}/posts`);
+        // ✔️ Example fetch (default GET)
+        const responseFetch = await pwApi.fetch({ request, page }, `${baseUrl}/posts`);
         expect(responseFetch.status()).toBe(200);
         const responseBodyFetch = await responseFetch.json();
         expect(responseBodyFetch.length).toBeGreaterThan(4);
         
     })
 
+    
+    test('Verify Failing GET Method (404)', async ({ request, page }) => {
+
+        // ❌ Example for get with wrong URL
+        const responseFetch = await pwApi.get({ request, page }, `${baseUrl}/this-is-a-non-sense-endpoint`);
+        expect(responseFetch.status()).toBe(404)
+        
+    })
 })

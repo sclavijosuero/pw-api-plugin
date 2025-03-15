@@ -3,7 +3,7 @@
   "version": "1.2.0",
   "description": "Playwright plugin for comprehensive API testing and presenting results in a user-friendly manner in the Playwright UI and HTML Report.",
   "main": "dist/src/index.js",
-  "types": "dist/src/index.d.ts",
+  "types": "dist/src/types.d.ts",
   "files": [
     ".github/**/*",
     ".npmrc",
@@ -38,15 +38,11 @@
   },
   "homepage": "https://github.com/sclavijosuero/pw-api-plugin#readme",
   "dependencies": {
-    "@playwright/test": "^1.50.1",
     "@types/node": "^22.13.5",
     "highlight.js": "^11.11.1"
   },
   "devDependencies": {
     "typescript": "^5.7.3",
-    "@playwright/test": "^1.50.1"
-  },
-  "peerDependencies": {
     "@playwright/test": "^1.50.1"
   }
 }
