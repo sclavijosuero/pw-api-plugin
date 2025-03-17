@@ -39,10 +39,11 @@
   "homepage": "https://github.com/sclavijosuero/pw-api-plugin#readme",
   "dependencies": {
     "@types/node": "^22.13.5",
+    "axios": "^1.8.3",
     "highlight.js": "^11.11.1"
   },
   "devDependencies": {
-    "typescript": "^5.7.3",
-    "@playwright/test": "^1.50.1"
+    "@playwright/test": "^1.50.1",
+    "typescript": "^5.7.3"
   }
 }

@@ -80,6 +80,13 @@ const createApiCallHtml = async (requestData: RequestDataInterface, responseData
     return apiCallHtml;
 }
 
+/**
+ * Generates an HTML string representing an API call request.
+ *
+ * @param requestData - The data for the API request, including URL, method, headers, body, params, and other options.
+ * @param callId - A unique identifier for the API call, used for generating unique element IDs.
+ * @returns A promise that resolves to a string containing the HTML representation of the API call request.
+ */
 const createApiCallHtmlRequest = async (requestData: RequestDataInterface, callId: number): Promise<string> => {
     // Request data
     const url = requestData.url;
@@ -87,6 +94,15 @@ const createApiCallHtmlRequest = async (requestData: RequestDataInterface, callI
     const requestHeaders = requestData.headers ? formatJson(requestData.headers) : undefined;
     const requestBody = requestData.data ? formatJson(requestData.data) : undefined;
     const requestParams = requestData.params ? formatJson(requestData.params) : undefined;
+
+    const requestAuth = requestData.auth ? formatJson(requestData.auth) : undefined;
+    const requestProxy = requestData.proxy ? formatJson(requestData.proxy) : undefined;
+
+    const definedFuncs = requestData.funcs ? Object.fromEntries(Object.entries(requestData.funcs).filter(([f, v]) => v !== undefined)) : undefined;
+    const requestFuncs = definedFuncs && Object.keys(definedFuncs).length > 0 
+        ? formatJson(Object.fromEntries(Object.entries(definedFuncs).map(([key, value]) => [key, value.toString()])))
+        : undefined;
+
     const requestOtherOptions = requestData.otherOptions ? formatJson(requestData.otherOptions) : undefined;
 
     const fromCall = requestData.fromCall ? ` [From a ${requestData.fromCall}]` : '';
@@ -99,14 +115,26 @@ const createApiCallHtmlRequest = async (requestData: RequestDataInterface, callI
         <label class="property">URL</label>
         <pre class="hljs pw-api-hljs">${url}</b></pre>
         <div class="pw-req-data-tabs-${callId} pw-data-tabs">
-            ${await createRequestTab(requestBody, 'BODY', callId, true)}
+            ${await createRequestTab(requestBody, 'BODY', callId, false)}
             ${await createRequestTab(requestHeaders, 'HEADERS', callId)}
             ${await createRequestTab(requestParams, 'PARAMS', callId)}
+            ${await createRequestTab(requestAuth, 'HTTP BASIC AUTH', callId)}
+            ${await createRequestTab(requestProxy, 'PROXY', callId)}
+            ${await createRequestTab(requestFuncs, 'FUNCTIONS', callId)}
             ${await createRequestTab(requestOtherOptions, 'OTHER OPTIONS', callId)}
         </div>
     </div>`
 }
 
+/**
+ * Creates an HTML string for a request tab with the provided data.
+ *
+ * @param data - The data to be displayed in the tab content. If undefined, an empty string is returned.
+ * @param tabLabel - The label for the tab.
+ * @param callId - A unique identifier for the call, used to ensure unique IDs for the tab elements.
+ * @param checked - Optional boolean indicating if the tab should be pre-selected (checked). Defaults to false.
+ * @returns A promise that resolves to a string containing the HTML for the request tab.
+ */
 const createRequestTab = async (data: any, tabLabel: string, callId: number, checked?: boolean): Promise<string> => {
     const tabLabelForId = tabLabel.toLowerCase().replace(' ', '-');
     return ` ${(data !== undefined) ?
@@ -117,6 +145,13 @@ const createRequestTab = async (data: any, tabLabel: string, callId: number, che
         </div>` : ''}`
 }
 
+/**
+ * Generates an HTML string representing the API call response.
+ *
+ * @param responseData - The response data from the API call.
+ * @param callId - The unique identifier for the API call.
+ * @returns A promise that resolves to an HTML string representing the API call response.
+ */
 const createApiCallHtmlResponse = async (responseData: ResponseDataInterface, callId: number): Promise<string> => {
     // Response data
     const status = responseData.status;
@@ -132,12 +167,21 @@ const createApiCallHtmlResponse = async (responseData: ResponseDataInterface, ca
         <label class="title-property pw-api-${statusClass}">(STATUS: ${status})</label><label class="title-property"> - ${durationMsg}</label>
         <br>
         <div class="pw-res-data-tabs-${callId} pw-data-tabs">
-            ${await createResponseTab(responseBody, 'BODY', callId, true)}
+            ${await createResponseTab(responseBody, 'BODY', callId, false)}
             ${await createResponseTab(responseHeaders, 'HEADERS', callId)}
          </div>
     </div>`
 }
 
+/**
+ * Creates an HTML string for a response tab with the given data, tab label, and call ID.
+ *
+ * @param data - The data to be displayed in the tab content. If undefined, an empty string is returned.
+ * @param tabLabel - The label for the tab.
+ * @param callId - The unique identifier for the call.
+ * @param checked - Optional. If `true`, the tab will be marked as checked. Defaults to `false`.
+ * @returns A promise that resolves to an HTML string representing the response tab.
+ */
 const createResponseTab = async (data: any, tabLabel: string, callId: number, checked?: boolean): Promise<string> => {
     const tabLabelForId = tabLabel.toLowerCase().replace(' ', '-');
     return ` ${(data !== undefined) ?
@@ -148,6 +192,12 @@ const createResponseTab = async (data: any, tabLabel: string, callId: number, ch
         </div>` : ''}`
 }
 
+/**
+ * Generates an new HTML page as string for an API call report attachment.
+ *
+ * @param apiCallHtml - The HTML content of the API call.
+ * @returns A promise that resolves to a string containing the complete HTML document.
+ */
 const createApiCallReportAttachment = async (apiCallHtml: string): Promise<string> => {
     return `<html>
         <head>

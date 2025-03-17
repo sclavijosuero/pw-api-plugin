@@ -15,6 +15,9 @@ export interface RequestDataInterface {
     headers?: object,
     data?: any,
     params?: object,
+    auth?: object,
+    proxy?: object,
+    funcs?: object,
     otherOptions?: object,
     fromCall?: string
 }

@@ -17,6 +17,7 @@ interface PlaywrightResponseInterface {
 
 
 class pwApi {
+
     // PUBLIC METHODS
     // --------------
 
@@ -31,12 +32,10 @@ class pwApi {
      * @returns {Promise<APIResponse>} - A promise that resolves to the API response.
      */
     static fetch = async ({ request, page }: { request: APIRequestContext; page: Page }, urlOrRequest: string | Request, options?: any): Promise<APIResponse> => {
-        return await test.step(`Api request - FETCH - ${urlOrRequest}`, async () => {
+        return await test.step(`PW Api Call - FETCH - ${urlOrRequest}`, async () => {
             const start = Date.now();
             const response: APIResponse = await request.fetch(urlOrRequest, options);
-            const { requestData, responseData } = await this.#obtainApiCallInfo({ urlOrRequest, options, fromCall: "FETCH" }, { response, duration: Date.now() - start });
-
-            await addApiCardToUI(page, requestData, responseData)
+            await this.#displayApiCallInfo(page, { urlOrRequest, options, fromCall: "FETCH" }, { response, duration: Date.now() - start });
             return response;
         });
     }
@@ -52,54 +51,10 @@ class pwApi {
      * @returns {Promise<APIResponse>} - A promise that resolves to the API response.
      */
     static get = async ({ request, page }: { request: APIRequestContext; page: Page }, url: string, options?: object): Promise<APIResponse> => {
-        return await test.step(`Api request - GET - ${url}`, async () => {
+        return await test.step(`PW Api Call - GET - ${url}`, async () => {
             const start = Date.now()
             const response: APIResponse = await request.get(url, options)
-            const { requestData, responseData } = await this.#obtainApiCallInfo({ urlOrRequest: url, options, method: 'GET'}, { response, duration: Date.now() - start })
-
-            await addApiCardToUI(page, requestData, responseData)
-            return response;
-        })
-    };
-
-    /**
-     * Sends a POST request to the specified URL and logs the request and response data on the Playwright UI.
-     *
-     * @param {Object} params - The parameters for the request.
-     * @param {APIRequestContext} params.request - The API request context.
-     * @param {Page} params.page - The Playwright page object.
-     * @param {string} url - The URL to send the GET request to.
-     * @param {object} [options] - Optional settings for the request.
-     * @returns {Promise<APIResponse>} - A promise that resolves to the API response.
-     */    
-    static post = async ({ request, page }: { request: APIRequestContext; page: Page }, url: string, options?: object): Promise<APIResponse> => {
-        return await test.step(`Api request - POST - ${url}`, async () => {
-            const start = Date.now();
-            const response: APIResponse = await request.post(url, options);
-            const { requestData, responseData } = await this.#obtainApiCallInfo({ urlOrRequest: url, options, method: 'POST'}, { response, duration: Date.now() - start })
-
-            await addApiCardToUI(page, requestData, responseData)
-            return response;
-        })
-    };
-
-    /**
-     * Sends a PUT request to the specified URL and logs the request and response data on the Playwright UI.
-     *
-     * @param {Object} params - The parameters for the request.
-     * @param {APIRequestContext} params.request - The API request context.
-     * @param {Page} params.page - The Playwright page object.
-     * @param {string} url - The URL to send the GET request to.
-     * @param {object} [options] - Optional settings for the request.
-     * @returns {Promise<APIResponse>} - A promise that resolves to the API response.
-     */
-    static put = async ({ request, page }: { request: APIRequestContext; page: Page }, url: string, options?: object): Promise<APIResponse> => {
-        return await test.step(`Api request - PUT - ${url}`, async () => {
-            const start = Date.now();
-            const response: APIResponse = await request.put(url, options);
-            const { requestData, responseData } = await this.#obtainApiCallInfo({ urlOrRequest: url, options, method: 'PUT'}, { response, duration: Date.now() - start })
-
-            await addApiCardToUI(page, requestData, responseData)
+            await this.#displayApiCallInfo(page, { urlOrRequest: url, options, method: 'GET'}, { response, duration: Date.now() - start })
             return response;
         })
     };
@@ -115,33 +70,10 @@ class pwApi {
      * @returns {Promise<APIResponse>} - A promise that resolves to the API response.
      */
     static delete = async ({ request, page }: { request: APIRequestContext; page: Page }, url: string, options?: object): Promise<APIResponse> => {
-        return await test.step(`Api request - DELETE - ${url}`, async () => {
+        return await test.step(`PW Api Call - DELETE - ${url}`, async () => {
             const start = Date.now();
             const response: APIResponse = await request.delete(url, options);
-            const { requestData, responseData } = await this.#obtainApiCallInfo({ urlOrRequest: url, options, method: 'DELETE'}, { response, duration: Date.now() - start })
-
-            await addApiCardToUI(page, requestData, responseData)
-            return response;
-        })
-    };
-
-    /**
-     * Sends a PATCH request to the specified URL and logs the request and response data on the Playwright UI.
-     *
-     * @param {Object} params - The parameters for the request.
-     * @param {APIRequestContext} params.request - The API request context.
-     * @param {Page} params.page - The Playwright page object.
-     * @param {string} url - The URL to send the GET request to.
-     * @param {object} [options] - Optional settings for the request.
-     * @returns {Promise<APIResponse>} - A promise that resolves to the API response.
-     */
-    static patch = async ({ request, page }: { request: APIRequestContext; page: Page }, url: string, options?: object): Promise<APIResponse> => {
-        return await test.step(`Api request - PATCH - ${url}`, async () => {
-            const start = Date.now();
-            const response: APIResponse = await request.patch(url, options);
-            const { requestData, responseData } = await this.#obtainApiCallInfo({ urlOrRequest: url, options, method: 'PATCH'}, { response, duration: Date.now() - start })
-
-            await addApiCardToUI(page, requestData, responseData)
+            await this.#displayApiCallInfo(page, { urlOrRequest: url, options, method: 'DELETE'}, { response, duration: Date.now() - start })
             return response;
         })
     };
@@ -157,12 +89,67 @@ class pwApi {
      * @returns {Promise<APIResponse>} - A promise that resolves to the API response.
      */
     static head = async ({ request, page }: { request: APIRequestContext; page: Page }, url: string, options?: object): Promise<APIResponse> => {
-        return await test.step(`Api request - HEAD - ${url}`, async () => {
+        return await test.step(`PW Api Call - HEAD - ${url}`, async () => {
             const start = Date.now();
             const response: APIResponse = await request.head(url, options);
-            const { requestData, responseData } = await this.#obtainApiCallInfo({ urlOrRequest: url, options, method: 'HEAD'}, { response, duration: Date.now() - start })
+            await this.#displayApiCallInfo(page, { urlOrRequest: url, options, method: 'HEAD'}, { response, duration: Date.now() - start })
+            return response;
+        })
+    };
 
-            await addApiCardToUI(page, requestData, responseData)
+    /**
+     * Sends a POST request to the specified URL and logs the request and response data on the Playwright UI.
+     *
+     * @param {Object} params - The parameters for the request.
+     * @param {APIRequestContext} params.request - The API request context.
+     * @param {Page} params.page - The Playwright page object.
+     * @param {string} url - The URL to send the GET request to.
+     * @param {object} [options] - Optional settings for the request.
+     * @returns {Promise<APIResponse>} - A promise that resolves to the API response.
+     */    
+    static post = async ({ request, page }: { request: APIRequestContext; page: Page }, url: string, options?: object): Promise<APIResponse> => {
+        return await test.step(`PW Api Call - POST - ${url}`, async () => {
+            const start = Date.now();
+            const response: APIResponse = await request.post(url, options);
+            await this.#displayApiCallInfo(page, { urlOrRequest: url, options, method: 'POST'}, { response, duration: Date.now() - start })
+            return response;
+        })
+    };
+
+    /**
+     * Sends a PUT request to the specified URL and logs the request and response data on the Playwright UI.
+     *
+     * @param {Object} params - The parameters for the request.
+     * @param {APIRequestContext} params.request - The API request context.
+     * @param {Page} params.page - The Playwright page object.
+     * @param {string} url - The URL to send the GET request to.
+     * @param {object} [options] - Optional settings for the request.
+     * @returns {Promise<APIResponse>} - A promise that resolves to the API response.
+     */
+    static put = async ({ request, page }: { request: APIRequestContext; page: Page }, url: string, options?: object): Promise<APIResponse> => {
+        return await test.step(`PW Api Call - PUT - ${url}`, async () => {
+            const start = Date.now();
+            const response: APIResponse = await request.put(url, options);
+            await this.#displayApiCallInfo(page, { urlOrRequest: url, options, method: 'PUT'}, { response, duration: Date.now() - start })
+            return response;
+        })
+    };
+
+    /**
+     * Sends a PATCH request to the specified URL and logs the request and response data on the Playwright UI.
+     *
+     * @param {Object} params - The parameters for the request.
+     * @param {APIRequestContext} params.request - The API request context.
+     * @param {Page} params.page - The Playwright page object.
+     * @param {string} url - The URL to send the GET request to.
+     * @param {object} [options] - Optional settings for the request.
+     * @returns {Promise<APIResponse>} - A promise that resolves to the API response.
+     */
+    static patch = async ({ request, page }: { request: APIRequestContext; page: Page }, url: string, options?: object): Promise<APIResponse> => {
+        return await test.step(`PW Api Call - PATCH - ${url}`, async () => {
+            const start = Date.now();
+            const response: APIResponse = await request.patch(url, options);
+            await this.#displayApiCallInfo(page, { urlOrRequest: url, options, method: 'PATCH'}, { response, duration: Date.now() - start })
             return response;
         })
     };
@@ -187,7 +174,8 @@ class pwApi {
      * @returns {Promise<{ requestData: RequestDataInterface, responseData: ResponseDataInterface }>} 
      * An object containing the processed request and response data.
      */
-    static #obtainApiCallInfo = async (
+    static #displayApiCallInfo = async (
+        page: Page,
         { urlOrRequest, options, method, fromCall }: PlaywrightRequestInterface,
         { response, duration }:PlaywrightResponseInterface
     ): Promise<{ requestData: RequestDataInterface, responseData: ResponseDataInterface}> => {
@@ -195,7 +183,7 @@ class pwApi {
         // Form the request data object for representation on the UI
         let requestData: RequestDataInterface = {
             url: typeof urlOrRequest === 'string' ? urlOrRequest : urlOrRequest.url(),
-            method: method ? method.toUpperCase() : (options && options.method ? options.method.toUpperCase() : 'GET'),
+            method: method?.toUpperCase() || options?.method?.toUpperCase() || 'GET',
             fromCall,
         }
 
@@ -221,46 +209,12 @@ class pwApi {
             body,
             duration
         };
+
+        await addApiCardToUI(page, requestData, responseData)
+
         return { requestData, responseData };
     }
 
 }
 
 export default pwApi;
-
-
-// interface PlaywrightApiCallInterface {
-//     apiFunc: Function,
-//     urlOrRequest: string | Request,
-//     options?: any,
-//     fromCall?: string,
-//     method?: string
-// }
-
-//      /**
-//      * Fetches data from the API and and logs the request and response data on the Playwright UI.
-//      * 
-//      * @param {Object} params - The parameters for the fetch function.
-//      * @param {APIRequestContext} params.request - The API request context.
-//      * @param {Page} params.page - The page object.
-//      * @param {string | Request} urlOrRequest - The URL or request object to fetch.
-//      * @param {any} [options] - Optional fetch options.
-//      * @returns {Promise<APIResponse>} - A promise that resolves to the API response.
-//      */
-//     static fetch = async ({ request, page }: { request: APIRequestContext; page: Page }, urlOrRequest: string | Request, options?: any): Promise<APIResponse> => {
-//         return await test.step(`Api request - FETCH - ${urlOrRequest}`, async () => {
-//             return await this.#apiCall(page, { apiFunc: request.fetch, urlOrRequest, options, fromCall: 'FETCH' })
-//         });
-//     }
-
-//     static #apiCall = async (page: Page, { apiFunc, urlOrRequest, options, fromCall, method }: PlaywrightApiCallInterface): Promise<APIResponse> => {
-//         const start = Date.now();
-//         const response: APIResponse = await apiFunc(urlOrRequest, options);
-//         const { requestData, responseData } = await this.#obtainApiCallInfo({ urlOrRequest, options, fromCall, method }, { response, duration: Date.now() - start });
-//         // await addApiCardToUI(page, requestData, responseData)
-
-//         console.log('requestData:', JSON.stringify(requestData))
-//         console.log('responseData:', JSON.stringify(responseData))
-
-//         return response;
-//     }
