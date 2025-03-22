@@ -306,16 +306,31 @@ The plugin provides two environment variables to control when the details of the
 - If the environment variable **`LOG_API_REPORT`** is set to **`"true"`**, the details of the API request and response are included as attachments in the **HTML Report**. By default, these results are not attached.
 
 #### Setting Environment Variables in the Terminal
-Environment variables can be configured directly in the terminal before running the tests. For example:
 
-In Playwright, environment variables can be set in the terminal before running the tests:
+In Playwright, environment variables can be set in the terminal before running the tests.
 
-E.g. in PowerShell
+For example, if you want to display the API request and result details in the **Playwright UI** and include them as an attachment in the **HTML Report**, simply do the following:
+
+- In PowerShell
 
 ```shell
 $env:LOG_API_UI="true"
 $env:LOG_API_REPORT="true"
-npx playwright test
+npx playwright test --ui
+```
+
+- In Bash
+
+```shell
+LOG_API_UI="true" LOG_API_REPORT="true" npx playwright test --ui
+```
+
+- In Batch
+
+```shell
+set LOG_API_UI="true"
+set LOG_API_REPORT="true"
+npx playwright test --ui
 ```
 
 #### Environment Variables Using a `.env` File
@@ -357,7 +372,6 @@ Another way to set environment variables in Playwright is by using a `.env` file
 
 
 ### Extension of the `test` function
-
 
 The library also introduces an extension of the **`test`** function, ensuring that the `page` fixture provided in the test **is only considered** when users want to display API call details in the UI by setting the environment variable `LOG_API_UI` to `"true"`. Otherwise, the `page` fixture will be ignored, improving performance.
 
@@ -542,7 +556,7 @@ const responseGet = await axiosApi.get({ page }, `${baseUrl}/posts/1`);
 👉👉👉 **IMPORTANT:** If you prefer not to present the API details in the **Playwright UI**, you can omit the page and instead pass an empty object as the first argument. This approach will make the call more efficient:
 
 ```js
-const responseGet = await axiosApi.get({}, `${baseUrl}/posts/1`);
+const responseGet = await axiosApi.get({ }, `${baseUrl}/posts/1`);
 ```
 
 
@@ -715,6 +729,11 @@ test.describe('AXIOS API Tests for https://jsonplaceholder.typicode.com', () => 
 To display detailed information about the API calls (request and response) in a user-friendly format in the **Playwright UI**, you need to ensure the following:
 
 1. Pass the **`page`** fixture to the pw-api-plugin methods in the object provided as the first argument.
+   For Playwright native:
+      const responseGet = await pwApi.get({ request, **page** }, 'https/my.api.com/posts/1')
+   For Axios:
+      const responseGet = await axiosApi.get({ **page** }, 'https/my.api.com/posts/1')
+
 2. Set the environment variable **`LOG_API_UI`** to **`"true"`**.
 
 To view detailed information about a specific API call, click on the **Actions** panel in the **page.setContent** line or in the assertion located immediately after the API call.

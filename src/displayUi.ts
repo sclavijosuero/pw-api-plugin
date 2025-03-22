@@ -275,7 +275,8 @@ const inLineStyles = `<style>
     .pw-always-selected { flex-wrap: wrap; background: rgb(238, 251, 255); }
     .pw-data-tabs { display: flex; flex-wrap: wrap; }
     .pw-data-tabs [type="radio"] { display: none; }
-    .pw-tab-label { padding: 10px 16px; cursor: pointer; border-width: 2px 1px 0 1px; border-radius: 6px 6px 0 0; border-color: rgb(238, 251, 255); border-style: solid;}
+    .pw-tab-label { padding: 10px 16px; cursor: pointer; border-width: 2px 1px 0 1px; border-radius: 6px 6px 0 0; border-color: rgb(238, 251, 255); border-style: solid; }
+    .pw-tab-label:hover { color: rgb(9, 128, 133); }
     .pw-tab-content { width: 100%; order: 1; display: none; }
     .pw-data-tabs [type="radio"]:checked + label + .pw-tab-content { display: block; }
     .pw-data-tabs [type="radio"]:checked + label { background: rgb(238, 251, 255); border: 0px;}
