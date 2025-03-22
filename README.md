@@ -301,9 +301,9 @@ Makes an Axios PATCH request with 'FormData' and logs the request and response d
 
 The plugin provides two environment variables to control when the details of the API calls are presented to the user:
 
-- When the environment variable **`LOG_API_UI`** is set to **`"true"`**, the API request and response information is presented in the Playwright UI in a user-friendly format. By default, the results are not displayed in the **Playwright UI**.
+- When the environment variable **`LOG_API_UI`** is set to **`"true"`**, the API request and response information is displayed in the **Playwright UI** and **Trace Viewer** in a user-friendly format. By default, these results are not shown.
 
-- If the environment variable **`LOG_API_REPORT`** is set to **`"true"`**, the details of the API request and response are included as attachments in the **HTML Report**. By default, the results are not included in the Playwright HTML Report.
+- If the environment variable **`LOG_API_REPORT`** is set to **`"true"`**, the details of the API request and response are included as attachments in the **HTML Report**. By default, these results are not attached.
 
 #### Setting Environment Variables in the Terminal
 Environment variables can be configured directly in the terminal before running the tests. For example:
@@ -723,7 +723,7 @@ To view detailed information about a specific API call, click on the **Actions**
 
 _Overview and details of API requests and responses presented in the Playwright UI._
 
-If you are using Axios methods, the card displaying the details of the API call can include additional tabs if such is provided in the `config` argument, such as **HTTP Basic Auth**, *Proxy* settings, and transformation **Functions**.
+If you are using Axios methods, the card displaying the details of the API call can include additional tabs if such is provided in the `config` argument, such as **HTTP Basic Auth**, **Proxy** settings, and transformation **Functions**.
 
 ![Overview and detailed information about API requests in Axios, including additional tabs](images/overview-axios.png)
 
@@ -751,6 +751,12 @@ The API results can also be visualized in the Trace Viewer by adding the option 
 ```shell
 npx playwright test --trace=on
 ```
+
+![Details of an API request, along with its response, are included in the Trace Viewer](images/trace-viewer-report.png)
+
+![Details of an API request, along with its response, are included in the Trace Viewer](images/trace-viewer.png)
+
+_Details of an API request, along with its response, are included in the Trace Viewer._
 
 
 ## LICENSE
