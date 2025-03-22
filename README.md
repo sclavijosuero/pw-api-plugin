@@ -729,9 +729,13 @@ test.describe('AXIOS API Tests for https://jsonplaceholder.typicode.com', () => 
 To display detailed information about the API calls (request and response) in a user-friendly format in the **Playwright UI**, you need to ensure the following:
 
 1. Pass the **`page`** fixture to the pw-api-plugin methods in the object provided as the first argument.
-   For Playwright native:
+
+   - For Playwright native:
+
       const responseGet = await pwApi.get({ request, **page** }, 'https/my.api.com/posts/1')
-   For Axios:
+
+   - For Axios:
+
       const responseGet = await axiosApi.get({ **page** }, 'https/my.api.com/posts/1')
 
 2. Set the environment variable **`LOG_API_UI`** to **`"true"`**.
