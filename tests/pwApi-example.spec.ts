@@ -1,6 +1,6 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
 
-import pwApi from '../src/pwApi';
+import { pwApi, test } from '../src/index';
 
 
 test.describe('PW API Tests for https://jsonplaceholder.typicode.com', () => {
@@ -10,15 +10,15 @@ test.describe('PW API Tests for https://jsonplaceholder.typicode.com', () => {
     test('Verify pwApi GET, HEAD, POST, PUT, PATCH, DELETE in single test', async ({ request, page }) => {
 
         // ✔️ Example of get
-        const responseGet = await pwApi.get({ request, page }, `${baseUrl}/posts/1`);
-        expect(responseGet.status()).toBe(200);
-        const responseBodyGet = await responseGet.json();
-        expect(responseBodyGet).toHaveProperty('id', 1);
+        const responseGet = await pwApi.get({ request, page }, `${baseUrl}/posts/1`)
+        expect(responseGet.status()).toBe(200)
+        const responseBodyGet = await responseGet.json()
+        expect(responseBodyGet).toHaveProperty('id', 1)
 
 
         // ✔️ Example of head
-        const responseHead = await pwApi.head({ request, page }, `${baseUrl}/posts/1`);
-        expect(responseHead.status()).toBe(200);
+        const responseHead = await pwApi.head({ request, page }, `${baseUrl}/posts/1`)
+        expect(responseHead.status()).toBe(200)
 
 
         // ✔️ Example of post (with request body and request headers)
@@ -31,12 +31,12 @@ test.describe('PW API Tests for https://jsonplaceholder.typicode.com', () => {
                 },
                 headers: {
                     'Content-type': 'application/json; charset=UTF-8',
-                }
+                },
             }
         );
-        expect(responsePost.status()).toBe(201);
-        const responseBodyPost = await responsePost.json();
-        expect(responseBodyPost).toHaveProperty('id', 101);
+        expect(responsePost.status()).toBe(201)
+        const responseBodyPost = await responsePost.json()
+        expect(responseBodyPost).toHaveProperty('id', 101)
 
 
         // ✔️ Example of put (with request: body, headers, params, timeout, maxRetries)
@@ -55,10 +55,10 @@ test.describe('PW API Tests for https://jsonplaceholder.typicode.com', () => {
                 timeout: 2000,
                 maxRetries: 1
             }
-        );
-        expect(responsePut.ok()).toBeTruthy();
-        const responseBodyPut = await responsePut.json();
-        expect(responseBodyPut).toHaveProperty('id', 1);
+        )
+        expect(responsePut.ok()).toBeTruthy()
+        const responseBodyPut = await responsePut.json()
+        expect(responseBodyPut).toHaveProperty('id', 1)
 
 
         // ✔️ Example of patch (with request body and request headers)
@@ -72,12 +72,12 @@ test.describe('PW API Tests for https://jsonplaceholder.typicode.com', () => {
                 },
             }
         );
-        expect(responsePatch.ok()).toBeTruthy();
+        expect(responsePatch.ok()).toBeTruthy()
 
 
         // ✔️ Example for delete
         const responseDelete = await pwApi.delete({ request, page }, 'https://jsonplaceholder.typicode.com/posts/1');
-        expect(responseDelete.ok()).toBeTruthy();
+        expect(responseDelete.ok()).toBeTruthy()
 
     })
 
@@ -86,9 +86,9 @@ test.describe('PW API Tests for https://jsonplaceholder.typicode.com', () => {
 
         // ✔️ Example fetch (default GET)
         const responseFetch = await pwApi.fetch({ request, page }, `${baseUrl}/posts`);
-        expect(responseFetch.status()).toBe(200);
-        const responseBodyFetch = await responseFetch.json();
-        expect(responseBodyFetch.length).toBeGreaterThan(4);
+        expect(responseFetch.status()).toBe(200)
+        const responseBodyFetch = await responseFetch.json()
+        expect(responseBodyFetch.length).toBeGreaterThan(4)
         
     })
 
@@ -96,7 +96,7 @@ test.describe('PW API Tests for https://jsonplaceholder.typicode.com', () => {
     test('Verify pwApi for Failing GET Method (404)', async ({ request, page }) => {
 
         // ❌ Example for get with wrong URL
-        const responseFetch = await pwApi.get({ request, page }, `${baseUrl}/this-is-a-non-sense-endpoint`);
+        const responseFetch = await pwApi.get({ request, page }, `${baseUrl}/this-is-a-non-sense-endpoint`)
         expect(responseFetch.status()).toBe(404)
         
     })

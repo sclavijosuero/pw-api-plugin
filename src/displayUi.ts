@@ -12,26 +12,31 @@ const hljsVersion: string = packageJSON['dependencies']['highlight.js'].replace(
 /**
  * Adds an API card to the UI by updating the page content with the provided request and response data.
  *
- * @param page - The Playwlright Page fixture representing the browser page.
  * @param {RequestDataInterface} requestData - The request data object containing details of the API request.
  * @param {ResponseDataInterface} responseData - The response data object containing details of the API response.
+ * @param {Page} page - Optional the Playwlright Page fixture representing the browser page.
  * @returns A `Promise` that resolves to `void` when the page content has been updated.
  */
-const addApiCardToUI = async (page: Page, requestData: RequestDataInterface, responseData: ResponseDataInterface): Promise<void> => {
+const addApiCardToUI = async (requestData: RequestDataInterface, responseData: ResponseDataInterface, page?: Page): Promise<void> => {
 
-    const emptyPageHtml = '<html><head></head><body></body></html>';
-    let html: string;
+    // const emptyPageHtml = '<html><head></head><body></body></html>';
+    // let html: string;
 
     const apiCallHtml = await createApiCallHtml(requestData, responseData);
 
-    const currentHtml = await page.content();
-    if (currentHtml === emptyPageHtml) {
-        html = await createPageHtml(apiCallHtml);
-    } else {
-        html = await addApiCallHtml(currentHtml, apiCallHtml);
-    }
+    if (page && process.env.LOG_API_UI === 'true') {
 
-    await page.setContent(html);
+        // const currentHtml = await page.content();
+        // if (currentHtml === emptyPageHtml) {
+        //     html = await createPageHtml(apiCallHtml);
+        // } else {
+        //     html = await addApiCallHtml(currentHtml, apiCallHtml);
+        // }
+
+        const html = await createPageHtml(apiCallHtml);
+
+        await page.setContent(html);
+    }
 
 }
 
@@ -67,15 +72,17 @@ const createApiCallHtml = async (requestData: RequestDataInterface, responseData
     </div>`
 
 
-    // Attach the API call report as an attachment to the test
-    const url = requestData.url;
-    const method = requestData.method.toUpperCase();
-    const fromCall = requestData.fromCall ? ` [From a ${requestData.fromCall}]` : '';
+    if (process.env.LOG_API_REPORT === 'true') {
+        // Attach the API call report as an attachment to the test
+        const url = requestData.url;
+        const method = requestData.method.toUpperCase();
+        const fromCall = requestData.fromCall ? ` [From a ${requestData.fromCall}]` : '';
 
-    test.info().attach(`Api request - ${method}${fromCall} - ${url}`, {
-        body: await createApiCallReportAttachment(apiCallHtml),
-        contentType: 'text/html'
-    })
+        test.info().attach(`Api request - ${method}${fromCall} - ${url}`, {
+            body: await createApiCallReportAttachment(apiCallHtml),
+            contentType: 'text/html'
+        })
+    }
 
     return apiCallHtml;
 }
@@ -99,7 +106,7 @@ const createApiCallHtmlRequest = async (requestData: RequestDataInterface, callI
     const requestProxy = requestData.proxy ? formatJson(requestData.proxy) : undefined;
 
     const definedFuncs = requestData.funcs ? Object.fromEntries(Object.entries(requestData.funcs).filter(([f, v]) => v !== undefined)) : undefined;
-    const requestFuncs = definedFuncs && Object.keys(definedFuncs).length > 0 
+    const requestFuncs = definedFuncs && Object.keys(definedFuncs).length > 0
         ? formatJson(Object.fromEntries(Object.entries(definedFuncs).map(([key, value]) => [key, value.toString()])))
         : undefined;
 
@@ -121,7 +128,7 @@ const createApiCallHtmlRequest = async (requestData: RequestDataInterface, callI
             ${await createRequestTab(requestAuth, 'HTTP BASIC AUTH', callId)}
             ${await createRequestTab(requestProxy, 'PROXY', callId)}
             ${await createRequestTab(requestFuncs, 'FUNCTIONS', callId)}
-            ${await createRequestTab(requestOtherOptions, 'OTHER OPTIONS', callId)}
+            ${await createRequestTab(requestOtherOptions, 'OTHER OPTIONS/CONFIG', callId)}
         </div>
     </div>`
 }
@@ -136,7 +143,7 @@ const createApiCallHtmlRequest = async (requestData: RequestDataInterface, callI
  * @returns A promise that resolves to a string containing the HTML for the request tab.
  */
 const createRequestTab = async (data: any, tabLabel: string, callId: number, checked?: boolean): Promise<string> => {
-    const tabLabelForId = tabLabel.toLowerCase().replace(' ', '-');
+    const tabLabelForId = tabLabel.toLowerCase().replace(' ', '-').replace('/', '-');
     return ` ${(data !== undefined) ?
         `<input type="radio" name="pw-req-data-tabs-${callId}" id="pw-req-${tabLabelForId}-${callId}" ${checked ? 'checked="checked"' : ''}>
         <label for="pw-req-${tabLabelForId}-${callId}" class="property pw-tab-label">${tabLabel.toUpperCase()}</label>
@@ -164,7 +171,7 @@ const createApiCallHtmlResponse = async (responseData: ResponseDataInterface, ca
 
     return `<div class="pw-api-response">
         <label class="title">RESPONSE - </label>
-        <label class="title-property pw-api-${statusClass}">(STATUS: ${status})</label><label class="title-property"> - ${durationMsg}</label>
+        <label class="title-property pw-api-${statusClass}">(STATUS: ${status} - ${statusText})</label><label class="title-property"> - ${durationMsg}</label>
         <br>
         <div class="pw-res-data-tabs-${callId} pw-data-tabs">
             ${await createResponseTab(responseBody, 'BODY', callId, false)}
