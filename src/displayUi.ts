@@ -24,18 +24,19 @@ const addApiCardToUI = async (requestData: RequestDataInterface, responseData: R
 
     const apiCallHtml = await createApiCallHtml(requestData, responseData);
 
-    if (page && process.env.LOG_API_UI === 'true') {
+    if (page && process.env.LOG_API_UI !== 'false') {
 
+        // Add HTM of each API call to the specific Action
+        const html = await createPageHtml(apiCallHtml);
+        await page.setContent(html);
+
+        // Add API at the end of the Playwright UI page
         // const currentHtml = await page.content();
         // if (currentHtml === emptyPageHtml) {
         //     html = await createPageHtml(apiCallHtml);
         // } else {
         //     html = await addApiCallHtml(currentHtml, apiCallHtml);
         // }
-
-        const html = await createPageHtml(apiCallHtml);
-
-        await page.setContent(html);
     }
 
 }
@@ -122,7 +123,7 @@ const createApiCallHtmlRequest = async (requestData: RequestDataInterface, callI
         <label class="property">URL</label>
         <pre class="hljs pw-api-hljs">${url}</b></pre>
         <div class="pw-req-data-tabs-${callId} pw-data-tabs">
-            ${await createRequestTab(requestBody, 'BODY', callId, false)}
+            ${await createRequestTab(requestBody, 'BODY', callId, true) /* Open BODY tab by default */ }
             ${await createRequestTab(requestHeaders, 'HEADERS', callId)}
             ${await createRequestTab(requestParams, 'PARAMS', callId)}
             ${await createRequestTab(requestAuth, 'HTTP BASIC AUTH', callId)}
@@ -174,7 +175,7 @@ const createApiCallHtmlResponse = async (responseData: ResponseDataInterface, ca
         <label class="title-property pw-api-${statusClass}">(STATUS: ${status} - ${statusText})</label><label class="title-property"> - ${durationMsg}</label>
         <br>
         <div class="pw-res-data-tabs-${callId} pw-data-tabs">
-            ${await createResponseTab(responseBody, 'BODY', callId, false)}
+            ${await createResponseTab(responseBody, 'BODY', callId, true) /* Open BODY tab by default */ }
             ${await createResponseTab(responseHeaders, 'HEADERS', callId)}
          </div>
     </div>`

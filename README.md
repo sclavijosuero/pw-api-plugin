@@ -1,6 +1,6 @@
 # pw-api-plugin
 
-Playwright plugin for comprehensive API testing and presenting results in a user-friendly manner in the Playwright UI and HTML Report. Supports Playwright native API and Axios requests.
+Playwright plugin for comprehensive API testing and result presentation using the Playwright UI, Trace Viewer, and HTML Report. It significantly aids debugging processes and supports both Playwright's native API and Axios requests.
 
 ![Overview](videos/overview.gif)
 
@@ -27,6 +27,57 @@ Playwright plugin for comprehensive API testing and presenting results in a user
 - Environment variables **`LOG_API_UI`** and **`LOG_API_UI`** to enable the display of API call details in **Playwright UI** and **HTML Report** respectively. _(Introduced in v2.0.0)_
 
 - Supports multiple API calls within a single test, allowing testing multiple endpoints as part of the same test scenario.
+
+
+## TABLE OF CONTENT
+
+- [pw-api-plugin](#pw-api-plugin)
+  - [MAIN FEATURES](#main-features)
+  - [TABLE OF CONTENT](#table-of-content)
+  - [INSTALLATION](#installation)
+  - [CONFIGURATION](#configuration)
+    - [For Playwright Native API](#for-playwright-native-api)
+    - [Axios API](#axios-api)
+  - [API REFERENCE](#api-reference)
+    - [Playwright Native API](#playwright-native-api)
+      - [✔️ `pwApi.fetch({ request[, page] }, urlOrRequest[, options])`](#️-pwapifetch-request-page--urlorrequest-options)
+      - [✔️ `pwApi.get({ request[, page] }, url[, options])`](#️-pwapiget-request-page--url-options)
+      - [✔️ `pwApi.delete({ request[, page] }, url[, options])`](#️-pwapidelete-request-page--url-options)
+      - [✔️ `pwApi.head({ request[, page] }, url[, options])`](#️-pwapihead-request-page--url-options)
+      - [✔️ `pwApi.post({ request[, page] }, url[, options])`](#️-pwapipost-request-page--url-options)
+      - [✔️ `pwApi.put({ request[, page] }, url[, options])`](#️-pwapiput-request-page--url-options)
+      - [✔️ `pwApi.patch({ request[, page] }, url[, options])`](#️-pwapipatch-request-page--url-options)
+    - [Axios API](#axios-api-1)
+      - [✔️ `axiosApi.axios({ [page] }, config)` and `axiosApi.axios({ [page] }, url[, config])`](#️-axiosapiaxios-page--config-and-axiosapiaxios-page--url-config)
+      - [✔️ `axiosApi.request({ [page] }, config)`](#️-axiosapirequest-page--config)
+      - [✔️ `axiosApi.get({ [page] }, url[, config])`](#️-axiosapiget-page--url-config)
+      - [✔️ `axiosApi.delete({ [page] }, url[, config])`](#️-axiosapidelete-page--url-config)
+      - [✔️ `axiosApi.head({ [page] }, url[, config])`](#️-axiosapihead-page--url-config)
+      - [✔️ `axiosApi.options({ [page] }, url[, config])`](#️-axiosapioptions-page--url-config)
+      - [✔️ `axiosApi.post({ [page] }, url[, data[, config]])`](#️-axiosapipost-page--url-data-config)
+      - [✔️ `axiosApi.put({ [page] }, url[, data[, config]])`](#️-axiosapiput-page--url-data-config)
+      - [✔️ `axiosApi.patch({ [page] }, url[, data[, config]])`](#️-axiosapipatch-page--url-data-config)
+      - [✔️ `axiosApi.postForm({ [page] }, url[, data[, config]])`](#️-axiosapipostform-page--url-data-config)
+      - [✔️ `axiosApi.putForm({ [page] }, url[, data[, config]])`](#️-axiosapiputform-page--url-data-config)
+      - [✔️ `axiosApi.patchForm({ [page] }, url[, data[, config]])`](#️-axiosapipatchform-page--url-data-config)
+  - [USAGE](#usage)
+    - [Environment variables](#environment-variables)
+      - [Setting Environment Variables in the Terminal](#setting-environment-variables-in-the-terminal)
+      - [Environment Variables Using a `.env` File](#environment-variables-using-a-env-file)
+    - [Extension of the `test` function](#extension-of-the-test-function)
+    - [Playwright Native API](#playwright-native-api-1)
+      - [Examples](#examples)
+    - [Axios API](#axios-api-2)
+      - [Examples](#examples-1)
+  - [PRESENTATION OF RESULTS](#presentation-of-results)
+    - [In Playwright User Interface](#in-playwright-user-interface)
+    - [In Playwright HTML Report](#in-playwright-html-report)
+    - [Trace Viewer](#trace-viewer)
+  - [LICENSE](#license)
+  - [CONTRIBUTING](#contributing)
+  - [COLABORATORS](#colaborators)
+  - [CHANGELOG](#changelog)
+  - [EXTERNAL REFERENCES](#external-references)
 
 
 ## INSTALLATION
@@ -301,7 +352,7 @@ Makes an Axios PATCH request with 'FormData' and logs the request and response d
 
 The plugin provides two environment variables to control when the details of the API calls are presented to the user:
 
-- When the environment variable **`LOG_API_UI`** is set to **`"true"`**, the API request and response information is displayed in the **Playwright UI** and **Trace Viewer** in a user-friendly format. By default, these results are not shown.
+- When the environment variable **`LOG_API_UI`** is set to **`"false"`**, the API request and response information is NOT displayed in the **Playwright UI** and **Trace Viewer** in a user-friendly format. By default, these results are shown.
 
 - If the environment variable **`LOG_API_REPORT`** is set to **`"true"`**, the details of the API request and response are included as attachments in the **HTML Report**. By default, these results are not attached.
 
@@ -309,27 +360,33 @@ The plugin provides two environment variables to control when the details of the
 
 In Playwright, environment variables can be set in the terminal before running the tests.
 
-For example, if you want to display the API request and result details in the **Playwright UI** and include them as an attachment in the **HTML Report**, simply do the following:
+For example, if you want to display the API request and result details in the **Playwright UI** or **Trace Viewer** and include them as an attachment in the **HTML Report**, simply do the following:
 
-- In PowerShell
+- In PowerShell (there is no need to set `LOG_API_UI` to `"true"` because it is enabled by default).
 
 ```shell
-$env:LOG_API_UI="true"
 $env:LOG_API_REPORT="true"
 npx playwright test --ui
 ```
 
-- In Bash
+- In Bash.
 
 ```shell
-LOG_API_UI="true" LOG_API_REPORT="true" npx playwright test --ui
+LOG_API_REPORT="true" npx playwright test --ui
 ```
 
-- In Batch
+- In Batch.
 
 ```shell
-set LOG_API_UI="true"
 set LOG_API_REPORT="true"
+npx playwright test --ui
+```
+
+But if you do not want to display the API request and result details in the **Playwright UI** or **Trace Viewer** , you will need to set `LOG_API_UI` to `"false"`:
+
+```shell
+$env:LOG_API_UI="false"
+$env:LOG_API_REPORT="true"
 npx playwright test --ui
 ```
 
@@ -373,9 +430,9 @@ Another way to set environment variables in Playwright is by using a `.env` file
 
 ### Extension of the `test` function
 
-The library also introduces an extension of the **`test`** function, ensuring that the `page` fixture provided in the test **is only considered** when users want to display API call details in the UI by setting the environment variable `LOG_API_UI` to `"true"`. Otherwise, the `page` fixture will be ignored, improving performance.
+The library also introduces an extension of the **`test`** function, ensuring that the `page` fixture provided in the test **is ignored** when the user sets the environment variable `LOG_API_UI` to `"false"`, resulting in improved performance.
 
-Users can still utilize the standard Playwright `test` function from `@playwright/test`. However, including the `page` fixture in the test may lead to reduced performance, even if the environment variable `LOG_API_UI` is set to `"true"`. Therefore, it is recommended to use the `test` function provided by the `pw-api-plugin`.
+Users can still utilize the standard Playwright `test` function from `@playwright/test`. However, including the `page` fixture in the test may lead to reduced performance, even if the environment variable `LOG_API_UI` is set to `"false"`. Therefore, it is recommended to use the `test` function provided by the `pw-api-plugin`.
 
 To use this, simply include the following in your tests:
 
@@ -738,7 +795,7 @@ To display detailed information about the API calls (request and response) in a 
 
       const responseGet = await axiosApi.get({ **page** }, 'https/my.api.com/posts/1')
 
-2. Set the environment variable **`LOG_API_UI`** to **`"true"`**.
+2. Set the environment variable **`LOG_API_UI`** to any value other than **`"false"`**, or simply leave it unset.
 
 To view detailed information about a specific API call, click on the **Actions** panel in the **page.setContent** line or in the assertion located immediately after the API call.
 
@@ -756,7 +813,7 @@ _Overview and detailed information about API requests in Axios, including additi
 ### In Playwright HTML Report
 
 To include detailed information about the API calls (request and response) in a user-friendly format in the **HTML Report**, you need to ensure the following:
-1. Set the environment variable `LOG_API_REPORT` to `"true"`.
+1. Set the environment variable **`LOG_API_REPORT`** to **`"true"`**.
 
 
 ![Overview and details of API requests and responses presented in the HTML Report](images/html-report1.png)
@@ -768,6 +825,8 @@ By clicking on one of the API attachments, you can display the API call details 
 ![Details of an API request, along with its response, are included as an attachment in the HTML Report](images/html-report2.png)
 
 _Details of an API request, along with its response, are included as an attachment in the HTML Report._
+
+### Trace Viewer
 
 The API results can also be visualized in the Trace Viewer by adding the option `--trace=on` when running the tests:
 
@@ -821,10 +880,9 @@ Thank you for your support!
   - `Params` and `Other Options/Config` (for both Playwright native and Axios requests).
   - `HTTP Basic Auth`, `Proxy`, and `Functions` (specific to Axios requests only).
 - New environment variables:
-  - `LOG_API_UI`: Enables or disables the display of API call details in the Playwright UI (disabled by default).
+  - `LOG_API_UI`: Enables or disables the display of API call details in the Playwright UI (enabled by default).
   - `LOG_API_REPORT`: Enables or disables the inclusion of API call details as attachments in reports (disabled by default).
 - Included in the response the Approximate Duration and Status Text.
-- Improved default behavior: The content in the Request and Response tabs is collapsed by default to reduce visual clutter.
 - Enhanced API inspection: View detailed information about individual APIs by clicking a specific request in the Actions panel. (Previously, details for the entire list of API calls were shown at the end of a test.)
 - Performance improvements.
 - Deep reengineering of the core source code for better efficiency and maintainability.
@@ -852,3 +910,8 @@ Thank you for your support!
 
 ### [1.0.0]
 - Initial release.
+
+
+## EXTERNAL REFERENCES
+
+- [Alan Voigt (Vóid)](https://www.linkedin.com/in/alan-voigt/ " Alan Voigt (Vóid)") - Video [Esse plugin para PLAYWRIGHT é muito bom! (Pw-api-plugin)](https://www.youtube.com/watch?v=-VzclPt6eFA "Esse plugin para PLAYWRIGHT é muito bom! (Pw-api-plugin)")

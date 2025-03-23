@@ -182,7 +182,7 @@ class pwApi {
         page?: Page
     ): Promise<{ requestData: RequestDataInterface; responseData: ResponseDataInterface; } | null> => {
 
-        if (process.env.LOG_API_UI === 'true' || process.env.LOG_API_REPORT === 'true') {
+        if (process.env.LOG_API_UI !== 'false' || process.env.LOG_API_REPORT === 'true') {
 
             // Form the request data object for representation on the UI
             let requestData: RequestDataInterface = {
