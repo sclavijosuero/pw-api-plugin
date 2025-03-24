@@ -21,8 +21,10 @@ Playwright plugin for comprehensive API testing and result presentation using th
 - Each API request and response also can be be included as an attachment in the **HTML Report**. _(Introduced in v1.2.0)_
 
 - The request and response data is presented in tabs to enhance clarity:
-  - Request tabs: **`Body`**, **`Headers`**, **`Params`**, **`HTTP Basic Auth`** (axios), **`Proxy`** (axios), **`Functions`** (axios), **`Other Options/Config`**.
-  - Response tabs: **`Body`**, **`Headers`**.
+
+  - Request tabs: `Body`, `Headers`, `Params`, `HTTP Basic Auth` (axios), `Proxy` (axios), `Functions` (axios), `Other Options/Config`.
+  
+  - Response tabs: `Body`**, `Headers`**.
 
 - Environment variables **`LOG_API_UI`** and **`LOG_API_UI`** to enable the display of API call details in **Playwright UI** and **HTML Report** respectively. _(Introduced in v2.0.0)_
 
