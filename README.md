@@ -1,6 +1,6 @@
 # pw-api-plugin
 
-Playwright plugin for comprehensive API testing and result presentation using the Playwright UI, Trace Viewer, and HTML Report. It significantly aids debugging processes and supports both Playwright's native API and Axios requests.
+Playwright plugin for comprehensive API testing and result presentation using the **Playwright UI**, **Trace Viewer**, and **HTML Report**. It significantly aids debugging processes and supports both **Playwright's native API** and **Axios** requests.
 
 ![Overview](videos/overview.gif)
 
