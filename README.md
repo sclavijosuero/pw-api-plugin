@@ -14,7 +14,7 @@ Playwright plugin for comprehensive API testing and result presentation using th
 
   - Axios API - Class **`axiosApi`** _(Introduced in v2.0.0)_
   
-    Methods : `axios`, `request`, `get`, `post`, `put`, `pPatch`, `delete`, `head`, `options`, `postForm`, `putForm`, and `patchForm`.
+    Methods : `axios`, `request`, `get`, `post`, `put`, `patch`, `delete`, `head`, `options`, `postForm`, `putForm`, and `patchForm`.
 
 - These functions can display detailed API request and response information in the  **Playwright UI** and the **Trace Viewer**.
 
