@@ -1,6 +1,5 @@
 import pwApi from "./pwApi";
 import axiosApi from "./axiosApi";
-
-const { testApi: test } = require('./testApi.js');
+import {testApi as test} from "./testApi"
 
 export { pwApi, axiosApi, test }
