@@ -875,6 +875,9 @@ Thank you for your support!
 
 ## CHANGELOG
 
+### [2.0.1]
+- Resolve import issue (contribution by [Mohammad Monfared](https://www.linkedin.com/in/monfared/ "Mohammad Monfared")).
+
 ### [2.0.0]
 - Support for Playwright native requests via the `pwApi` class (⚠️ Breaking Change).
 - Support for Axios requests via the `axiosApi` class.
@@ -905,7 +908,7 @@ Thank you for your support!
 - Fix for an issue where the response does not return a body.
 
 ### [1.0.2]
-- Full support for Typescript  (contribution by [Mohammad Monfared](https://github.com/w4dd325 "Mohammad Monfared")).
+- Full support for Typescript (contribution by [Mohammad Monfared](https://www.linkedin.com/in/monfared/ "Mohammad Monfared")).
   
 ### [1.0.1]
 - Fix depedencies with Playwright.
