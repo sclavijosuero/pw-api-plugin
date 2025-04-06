@@ -26,7 +26,7 @@ Playwright plugin for comprehensive API testing and result presentation using th
   
   - Response tabs: `Body`, `Headers`.
 
-- Environment variables **`LOG_API_UI`** and **`LOG_API_UI`** to enable the display of API call details in **Playwright UI** and **HTML Report** respectively. _(Introduced in v2.0.0)_
+  - Environment variables **`LOG_API_UI`** and **`LOG_API_REPORT`** to enable the display of API call details in **Playwright UI**/**Trace Viewer**, and **HTML Report** respectively. _(Introduced in v2.0.0)_
 
 - Supports multiple API calls within a single test, allowing testing multiple endpoints as part of the same test scenario.
 
@@ -427,7 +427,6 @@ Another way to set environment variables in Playwright is by using a `.env` file
 
 
 > For more information, read the official documentation on [Passing Environment Variables](https://playwright.dev/docs/test-parameterize#passing-environment-variables "Passing Environment Variables").
-
 
 
 ### Extension of the `test` function

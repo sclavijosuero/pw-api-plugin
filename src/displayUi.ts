@@ -149,7 +149,7 @@ const createRequestTab = async (data: any, tabLabel: string, callId: number, che
         `<input type="radio" name="pw-req-data-tabs-${callId}" id="pw-req-${tabLabelForId}-${callId}" ${checked ? 'checked="checked"' : ''}>
         <label for="pw-req-${tabLabelForId}-${callId}" class="property pw-tab-label">${tabLabel.toUpperCase()}</label>
         <div class="pw-tab-content">
-            <pre class="hljs" id="req-body-${callId}">${data}</pre>
+           <pre class="hljs" id="req-${tabLabelForId}-${callId}" data-tab-type="req-${tabLabelForId}">${data}</pre>
         </div>` : ''}`
 }
 
@@ -196,7 +196,7 @@ const createResponseTab = async (data: any, tabLabel: string, callId: number, ch
         `<input type="radio" name="pw-res-data-tabs-${callId}" id="pw-res-${tabLabelForId}-${callId}" ${checked ? 'checked="checked"' : ''}>
         <label for="pw-res-${tabLabelForId}-${callId}" class="property pw-tab-label">${tabLabel.toUpperCase()}</label>
         <div class="pw-tab-content">
-            <pre class="hljs" id="res-body-${callId}">${data}</pre>
+            <pre class="hljs" id="res-${tabLabelForId}-${callId}" data-tab-type="res-${tabLabelForId}">${data}</pre>
         </div>` : ''}`
 }
 
@@ -230,7 +230,6 @@ const createPageHtml = async (apiCallHtml: string): Promise<string> => {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Simple HTML Page</title>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${hljsVersion}/styles/vs.min.css"/>
             ${inLineStyles}
         </head>
