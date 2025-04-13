@@ -17,13 +17,16 @@ interface AxiosResponseInterface {
     duration: number
 }
 
+/**
+ * Class providing methods to make HTTP requests using Axios API and log the request and response data on the Playwright UI.
+ */
 class axiosApi {
 
     // PUBLIC METHODS
     // --------------
 
     /**
-     * Makes an Axios API call and logs the request and response details.
+     * Class function that makes an AXIOS API call and logs the request and response data on the Playwright UI.
      *
      * @param {Object} params - The parameters for the API call.
      * @param {Page} [params.page] - Optional the Playwright page object.
@@ -50,7 +53,7 @@ class axiosApi {
     }
 
     /**
-     * Makes an Axios API request and logs the request and response data on the Playwright UI.
+     * Class function that makes an Axios REQUEST and logs the request and response data on the Playwright UI.
      *
      * @param {Object} params - The parameters for the request.
      * @param {Page} [params.page] - Optional the Playwright page object.
@@ -67,7 +70,7 @@ class axiosApi {
     }
 
     /**
-     * Makes an Axios GET request to the specified URL and logs the request and response data on the Playwright UI.
+     * Class function that makes an Axios GET request to the specified URL and logs the request and response data on the Playwright UI.
      *
      * @param {Object} params - The parameters for the GET request.
      * @param {Page} [params.page] - Optional the Playwright page object.
@@ -85,7 +88,7 @@ class axiosApi {
     };
 
     /**
-     * Makes an Axios DELETE request to the specified URL and logs the request and response data on the Playwright UI.
+     * Class function that makes an Axios DELETE request to the specified URL and logs the request and response data on the Playwright UI.
      *
      * @param {Object} params - The parameters for the DELETE request.
      * @param {Page} [params.page] - Optional the Playwright page object.
@@ -103,7 +106,7 @@ class axiosApi {
     };
 
     /**
-     * Makes an Axios HTTP HEAD request to the specified URL and logs the request and response data on the Playwright UI.
+     * Class function that makes an Axios HEAD request to the specified URL and logs the request and response data on the Playwright UI.
      *
      * @param {Object} params - The parameters for the request.
      * @param {Page} [params.page] - Optional the Playwright page object.
@@ -121,7 +124,7 @@ class axiosApi {
     };
 
     /**
-     * Makes an Axios OPTIONS request to the specified URL and logs the request and response data on the Playwright UI.
+     * Class function that makes an Axios OPTIONS request to the specified URL and logs the request and response data on the Playwright UI.
      *
      * @param {Object} param0 - An object containing the page instance.
      * @param {Page} param0.page - The Playwright page instance.
@@ -139,7 +142,7 @@ class axiosApi {
     };
 
     /**
-     * Makes an Axios POST request to the specified URL and logs the request and response data on the Playwright UI.
+     * Class function that makes an Axios POST request to the specified URL and logs the request and response data on the Playwright UI.
      *
      * @param {Object} params - The parameters for the POST request.
      * @param {Page} [params.page] - Optional the Playwright page object.
@@ -158,8 +161,7 @@ class axiosApi {
     };
 
     /**
-     * Makes an Axios PUT request to the specified URL and logs the request and response data on the Playwright UI.
-     * Logs the API call information and its duration.
+     * Class function that makes an Axios PUT request to the specified URL and logs the request and response data on the Playwright UI.
      *
      * @param {Object} params - The parameters for the PUT request.
      * @param {Page} [params.page] - Optional the Playwright page object.
@@ -178,7 +180,7 @@ class axiosApi {
     };
 
     /**
-     * Makes an Axios PATCH request to the specified URL and logs the request and response data on the Playwright UI.
+     * Class function that makes an Axios PATCH request to the specified URL and logs the request and response data on the Playwright UI.
      *
      * @param {Object} params - The parameters for the PATCH request.
      * @param {Page} params.page - The Playwright Page object.
@@ -197,7 +199,7 @@ class axiosApi {
     };
 
     /**
-     * Makes an Axios POST request with 'FormData' to the specified URL and logs the request and response data on the Playwright UI.
+     * Class function that makes an Axios POSTFORM request with 'FormData' to the specified URL and logs the request and response data on the Playwright UI.
      * 
      * @param {Object} params - The parameters for the API call.
      * @param {Page} [params.page] - Optional the Playwright page object.
@@ -216,7 +218,7 @@ class axiosApi {
     };
 
     /**
-     * Makes an Axios PUT request with 'FormData' to the specified URL and logs the request and response data on the Playwright UI.
+     * Class function that makes an Axios PUTFORM request with 'FormData' to the specified URL and logs the request and response data on the Playwright UI.
      *
      * @param {Object} params - The parameters for the request.
      * @param {Page} [params.page] - Optional the Playwright page object.
@@ -235,7 +237,7 @@ class axiosApi {
     };
 
     /**
-     * Makes an Axios PATCH request with 'FormData' to the specified URL and logs the request and response data on the Playwright UI.
+     * Class function that makes an Axios PATCHFORM request with 'FormData' to the specified URL and logs the request and response data on the Playwright UI.
      *
      * @param {Object} params - The parameters for the function.
      * @param {Page} [params.page] - Optional the Playwright page object.

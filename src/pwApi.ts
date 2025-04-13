@@ -16,13 +16,16 @@ interface PlaywrightResponseInterface {
 }
 
 
+/**
+ * Class providing methods to make HTTP requests using Playwright native API and log the request and response data on the Playwright UI.
+ */
 class pwApi {
 
     // PUBLIC METHODS
     // --------------
 
     /**
-    * Fetches data from the API and and logs the request and response data on the Playwright UI.
+    * Class function that makes a Playwright FETCH REQUEST to the specified URL and logs the request and response data on the Playwright UI.
     * 
     * @param {Object} params - The parameters for the fetch function.
     * @param {APIRequestContext} params.request - The API Playwright request context.
@@ -41,7 +44,7 @@ class pwApi {
     }
 
     /**
-     * Makes a GET request to the specified URL and logs the request and response data on the Playwright UI.
+     * Class function that makes a Playwright GET request to the specified URL and logs the request and response data on the Playwright UI.
      *
      * @param {Object} params - The parameters for the request.
      * @param {APIRequestContext} params.request - The API Playwright request context.
@@ -60,7 +63,7 @@ class pwApi {
     };
 
     /**
-     * Makes a DELETE request to the specified URL and logs the request and response data on the Playwright UI.
+     * Class function that makes a DELETE request to the specified URL and logs the request and response data on the Playwright UI.
      *
      * @param {Object} params - The parameters for the request.
      * @param {APIRequestContext} params.request - The API Playwright request context.
@@ -79,7 +82,7 @@ class pwApi {
     };
 
     /**
-     * Makes a HEAD request to the specified URL and logs the request and response data on the Playwright UI.
+     * Class function that makes a HEAD request to the specified URL and logs the request and response data on the Playwright UI.
      *
      * @param {Object} params - The parameters for the request.
      * @param {APIRequestContext} params.request - The API Playwright request context.
@@ -98,7 +101,7 @@ class pwApi {
     };
 
     /**
-     * Makes a POST request to the specified URL and logs the request and response data on the Playwright UI.
+     * Class function that makes a POST request to the specified URL and logs the request and response data on the Playwright UI.
      *
      * @param {Object} params - The parameters for the request.
      * @param {APIRequestContext} params.request - The API Playwright request context.
@@ -117,7 +120,7 @@ class pwApi {
     };
 
     /**
-     * Makes a PUT request to the specified URL and logs the request and response data on the Playwright UI.
+     * Class function that makes a PUT request to the specified URL and logs the request and response data on the Playwright UI.
      *
      * @param {Object} params - The parameters for the request.
      * @param {APIRequestContext} params.request - The API Playwright request context.
@@ -136,7 +139,7 @@ class pwApi {
     };
 
     /**
-     * Makes a PATCH request to the specified URL and logs the request and response data on the Playwright UI.
+     * Class function that makes a PATCH request to the specified URL and logs the request and response data on the Playwright UI.
      *
      * @param {Object} params - The parameters for the request.
      * @param {APIRequestContext} params.request - The API Playwright request context.

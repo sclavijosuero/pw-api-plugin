@@ -110,11 +110,13 @@ import { pwAxios, test } from 'pw-api-plugin';
 
 ## API REFERENCE
 
-### Playwright Native API
+### **`pwApi`*
+
+Class providing methods to make HTTP requests using Playwright native API and log the request and response data on the Playwright UI.
 
 #### ✔️ `pwApi.fetch({ request[, page] }, urlOrRequest[, options])`
 
-Fetches data from the API and logs the request and response data on the Playwright UI.
+Class function that makes a Playwright FETCH REQUEST to the specified URL and logs the request and response data on the Playwright UI.
 
 - **Parameters**:
   - `params` (Object)
@@ -126,7 +128,7 @@ Fetches data from the API and logs the request and response data on the Playwrig
 
 #### ✔️ `pwApi.get({ request[, page] }, url[, options])`
 
-Makes a GET request to the specified URL and logs the request and response data on the Playwright UI.
+Class function that makes a Playwright GET request to the specified URL and logs the request and response data on the Playwright UI.
 
 - **Parameters**:
   - `params` (Object)
@@ -138,7 +140,7 @@ Makes a GET request to the specified URL and logs the request and response data 
 
 #### ✔️ `pwApi.delete({ request[, page] }, url[, options])`
 
-Makes a DELETE request to the specified URL and logs the request and response data on the Playwright UI.
+Class function that makes a DELETE request to the specified URL and logs the request and response data on the Playwright UI.
 
 - **Parameters**:
   - `params` (Object)
@@ -150,7 +152,7 @@ Makes a DELETE request to the specified URL and logs the request and response da
 
 #### ✔️ `pwApi.head({ request[, page] }, url[, options])`
 
-Makes a HEAD request to the specified URL and logs the request and response data on the Playwright UI.
+Class function that makes a HEAD request to the specified URL and logs the request and response data on the Playwright UI.
 
 - **Parameters**:
   - `params` (Object)
@@ -162,7 +164,7 @@ Makes a HEAD request to the specified URL and logs the request and response data
 
 #### ✔️ `pwApi.post({ request[, page] }, url[, options])`
 
-Makes a POST request to the specified URL and logs the request and response data on the Playwright UI.
+Class function that makes a POST request to the specified URL and logs the request and response data on the Playwright UI.
 
 - **Parameters**:
   - `params` (Object)
@@ -174,7 +176,7 @@ Makes a POST request to the specified URL and logs the request and response data
 
 #### ✔️ `pwApi.put({ request[, page] }, url[, options])`
 
-Makes a PUT request to the specified URL and logs the request and response data on the Playwright UI.
+Class function that makes a PUT request to the specified URL and logs the request and response data on the Playwright UI.
 
 - **Parameters**:
   - `params` (Object)
@@ -186,7 +188,7 @@ Makes a PUT request to the specified URL and logs the request and response data 
 
 #### ✔️ `pwApi.patch({ request[, page] }, url[, options])`
 
-Makes a PATCH request to the specified URL and logs the request and response data on the Playwright UI.
+Class function that makes a PATCH request to the specified URL and logs the request and response data on the Playwright UI.
 
 - **Parameters**:
   - `params` (Object)
@@ -198,11 +200,13 @@ Makes a PATCH request to the specified URL and logs the request and response dat
 
 ---
 
-### Axios API
+### **`axiosApi`**
+
+Class providing methods to make HTTP requests using Axios API and log the request and response data on the Playwright UI.
 
 #### ✔️ `axiosApi.axios({ [page] }, config)` and `axiosApi.axios({ [page] }, url[, config])`
 
-Makes an Axios API call and logs the request and response details.
+Class function that makes an AXIOS API call and logs the request and response data on the Playwright UI.
 
 - **Parameters**:
   - `params` (Object)
@@ -214,7 +218,7 @@ Makes an Axios API call and logs the request and response details.
 
 #### ✔️ `axiosApi.request({ [page] }, config)`
 
-Makes an Axios API request and logs the request and response data on the Playwright UI.
+Class function that makes an Axios REQUEST and logs the request and response data on the Playwright UI.
 
 - **Parameters**:
   - `params` (Object)
@@ -225,7 +229,7 @@ Makes an Axios API request and logs the request and response data on the Playwri
 
 #### ✔️ `axiosApi.get({ [page] }, url[, config])`
 
-Makes an Axios GET request to the specified URL and logs the request and response data on the Playwright UI.
+Class function that makes an Axios GET request to the specified URL and logs the request and response data on the Playwright UI.
 
 - **Parameters**:
   - `params` (Object)
@@ -237,7 +241,7 @@ Makes an Axios GET request to the specified URL and logs the request and respons
 
 #### ✔️ `axiosApi.delete({ [page] }, url[, config])`
 
-Makes an Axios DELETE request and logs the request and response data on the Playwright UI.
+Class function that makes an Axios DELETE request to the specified URL and logs the request and response data on the Playwright UI.
 
 - **Parameters**:
   - `params` (Object)
@@ -249,7 +253,7 @@ Makes an Axios DELETE request and logs the request and response data on the Play
 
 #### ✔️ `axiosApi.head({ [page] }, url[, config])`
 
-Makes an Axios HEAD request to the specified URL and logs the request and response data on the Playwright UI.
+Class function that makes an Axios HEAD request to the specified URL and logs the request and response data on the Playwright UI.
 
 - **Parameters**:
   - `params` (Object)
@@ -261,7 +265,7 @@ Makes an Axios HEAD request to the specified URL and logs the request and respon
 
 #### ✔️ `axiosApi.options({ [page] }, url[, config])`
 
-Makes an Axios OPTIONS request to the specified URL and logs the request and response data on the Playwright UI.
+Class function that makes an Axios OPTIONS request to the specified URL and logs the request and response data on the Playwright UI.
 
 - **Parameters**:
   - `params` (Object)
@@ -273,7 +277,7 @@ Makes an Axios OPTIONS request to the specified URL and logs the request and res
 
 #### ✔️ `axiosApi.post({ [page] }, url[, data[, config]])`
 
-Makes an Axios POST request and logs the request and response data on the Playwright UI.
+Class function that makes an Axios POST request to the specified URL and logs the request and response data on the Playwright UI.
 
 - **Parameters**:
   - `params` (Object)
@@ -286,7 +290,7 @@ Makes an Axios POST request and logs the request and response data on the Playwr
 
 #### ✔️ `axiosApi.put({ [page] }, url[, data[, config]])`
 
-Makes an Axios PUT request and logs the request and response data on the Playwright UI.
+Class function that makes an Axios PUT request to the specified URL and logs the request and response data on the Playwright UI.
 
 - **Parameters**:
   - `params` (Object)
@@ -299,7 +303,7 @@ Makes an Axios PUT request and logs the request and response data on the Playwri
 
 #### ✔️ `axiosApi.patch({ [page] }, url[, data[, config]])`
 
-Makes an Axios PATCH request and logs the request and response data on the Playwright UI.
+Class function that makes an Axios PATCH request to the specified URL and logs the request and response data on the Playwright UI.
 
 - **Parameters**:
   - `params` (Object)
@@ -312,7 +316,7 @@ Makes an Axios PATCH request and logs the request and response data on the Playw
 
 #### ✔️ `axiosApi.postForm({ [page] }, url[, data[, config]])`
 
-Makes an Axios POST request with 'FormData' and logs the request and response data on the Playwright UI.
+Class function that makes an Axios POSTFORM request with 'FormData' to the specified URL and logs the request and response data on the Playwright UI.
 
 - **Parameters**:
   - `params` (Object)
@@ -324,7 +328,7 @@ Makes an Axios POST request with 'FormData' and logs the request and response da
 
 #### ✔️ `axiosApi.putForm({ [page] }, url[, data[, config]])`
 
-Makes an Axios PUT request with 'FormData' and logs the request and response data on the Playwright UI.
+Class function that makes an Axios PUTFORM request with 'FormData' to the specified URL and logs the request and response data on the Playwright UI.
 
 - **Parameters**:
   - `params` (Object)
@@ -337,7 +341,7 @@ Makes an Axios PUT request with 'FormData' and logs the request and response dat
 
 #### ✔️ `axiosApi.patchForm({ [page] }, url[, data[, config]])`
 
-Makes an Axios PATCH request with 'FormData' and logs the request and response data on the Playwright UI.
+Class function that makes an Axios PATCHFORM request with 'FormData' to the specified URL and logs the request and response data on the Playwright UI.
 
 - **Parameters**:
   - `params` (Object)
@@ -874,6 +878,9 @@ Thank you for your support!
 
 ## CHANGELOG
 
+### [2.0.2]
+- Fix hover information for public functions.
+  
 ### [2.0.1]
 - Resolve import issue (contribution by [Mohammad Monfared](https://www.linkedin.com/in/monfared/ "Mohammad Monfared")).
 
