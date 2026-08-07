@@ -4,6 +4,8 @@ import type { RequestDataInterface, ResponseDataInterface } from './types.js';
 import hljs from 'highlight.js/lib/common';
 // @ts-ignore - js-beautify doesn't have type definitions
 import * as jsBeautify from 'js-beautify';
+// @ts-ignore - isomorphic-dompurify doesn't ship type definitions
+import DOMPurify from 'isomorphic-dompurify';
 import * as packageJSON from '../package.json'
 import { Page, test } from '@playwright/test';
 
@@ -39,35 +41,6 @@ const addApiCardToUI = async (requestData: RequestDataInterface, responseData: R
     if (page && process.env.LOG_API_UI !== 'false') {
         const html = await createPageHtml(apiCallHtml);
         await page.setContent(html, { waitUntil: 'domcontentloaded' });
-
-        // After setContent, ensure all iframes with data-html-base64 are loaded
-        // This ensures HTML rendering works properly
-        try {
-            await page.evaluate(() => {
-                const containers = document.querySelectorAll('[data-html-base64]');
-                containers.forEach((container) => {
-                    const base64 = container.getAttribute('data-html-base64');
-                    if (base64) {
-                        const iframe = container.parentElement?.querySelector('iframe');
-                        if (iframe && !iframe.src) {
-                            try {
-                                const binaryString = atob(base64);
-                                const bytes = new Uint8Array(binaryString.length);
-                                for (let i = 0; i < binaryString.length; i++) {
-                                    bytes[i] = binaryString.charCodeAt(i);
-                                }
-                                const blob = new Blob([bytes], { type: 'text/html;charset=utf-8' });
-                                iframe.src = URL.createObjectURL(blob);
-                            } catch (e) {
-                                console.error('Error loading HTML in iframe:', e);
-                            }
-                        }
-                    }
-                });
-            });
-        } catch (e) {
-            console.warn('Could not initialize HTML iframes:', e);
-        }
     }
 
 }
@@ -198,42 +171,35 @@ const createApiCallHtmlResponse = async (responseData: ResponseDataInterface, ca
     const statusText = responseData.statusText;
     const responseHeaders = responseData.headers ? formatJson(responseData.headers) : undefined;
 
-    // Check if body is HTML/text content (has _rawText property)
+    // The BODY tab should show any type of response: rendered HTML content
+    // or formatted/highlighted text (JSON, XML, plain text, etc).
     let responseBody: string | undefined;
     let isHtmlResponse = false;
-    let rawHtmlText: string | null = null;
     if (responseData.body) {
         if ((responseData.body as any)._rawText !== undefined && (responseData.body as any)._contentType !== undefined) {
             // This is HTML/text content
             const contentType = (responseData.body as any)._contentType;
             const rawText = (responseData.body as any)._rawText;
-
-            // Determine language for syntax highlighting
-            let language = 'plaintext';
             const trimmedText = rawText.trim();
 
-            // Check content-type first
-            if (contentType.includes('html')) {
-                language = 'html';
-                isHtmlResponse = true;
-                rawHtmlText = rawText;
-            } else if (contentType.includes('xml')) {
-                language = 'xml';
-            } else if (contentType.includes('css')) {
-                language = 'css';
-            } else if (contentType.includes('javascript')) {
-                language = 'javascript';
-            } else if (trimmedText.startsWith('<!DOCTYPE') || trimmedText.startsWith('<html')) {
-                // Detect HTML by content even if content-type doesn't indicate it
-                language = 'html';
-                isHtmlResponse = true;
-                rawHtmlText = rawText;
-            } else if (trimmedText.startsWith('<?xml')) {
-                // Detect XML by content
-                language = 'xml';
-            }
+            isHtmlResponse = contentType.includes('html') ||
+                trimmedText.startsWith('<!DOCTYPE') ||
+                trimmedText.startsWith('<html');
 
-            responseBody = formatText(rawText, language);
+            if (isHtmlResponse) {
+                responseBody = createRenderedHtmlContent(rawText);
+            } else {
+                // Determine language for syntax highlighting
+                let language = 'plaintext';
+                if (contentType.includes('xml') || trimmedText.startsWith('<?xml')) {
+                    language = 'xml';
+                } else if (contentType.includes('css')) {
+                    language = 'css';
+                } else if (contentType.includes('javascript')) {
+                    language = 'javascript';
+                }
+                responseBody = formatText(rawText, language);
+            }
         } else {
             // This is regular JSON
             responseBody = formatJson(responseData.body);
@@ -243,16 +209,8 @@ const createApiCallHtmlResponse = async (responseData: ResponseDataInterface, ca
     const responseDuration = responseData.duration;
     const durationMsg = responseDuration ? 'Duration aprox. ' + (responseDuration < 1000 ? `${responseDuration}ms` : `${(responseDuration / 1000).toFixed(2)}s`) : '';
 
-    // Build tabs - add RENDERED tab for HTML responses
     let tabsHtml = '';
-    if (isHtmlResponse && rawHtmlText) {
-        // For HTML, show RENDERED tab first, then BODY (code), then HEADERS
-        tabsHtml += await createResponseTabRendered(rawHtmlText, 'RENDERED', callId, true) /* Open RENDERED tab by default for HTML */;
-        tabsHtml += await createResponseTab(responseBody, 'BODY', callId);
-    } else {
-        // For non-HTML, show BODY tab first
-        tabsHtml += await createResponseTab(responseBody, 'BODY', callId, true) /* Open BODY tab by default */;
-    }
+    tabsHtml += await createResponseTab(responseBody, 'BODY', callId, true, isHtmlResponse) /* Open BODY tab by default */;
     tabsHtml += await createResponseTab(responseHeaders, 'HEADERS', callId);
 
     return `<div class="pw-api-response">
@@ -272,15 +230,19 @@ const createApiCallHtmlResponse = async (responseData: ResponseDataInterface, ca
  * @param tabLabel - The label for the tab.
  * @param callId - The unique identifier for the call.
  * @param checked - Optional. If `true`, the tab will be marked as checked. Defaults to `false`.
+ * @param isRenderedHtml - Optional. If `true`, `data` is already-safe markup to render as-is. Defaults to `false`.
  * @returns A promise that resolves to an HTML string representing the response tab.
  */
-const createResponseTab = async (data: any, tabLabel: string, callId: number, checked?: boolean): Promise<string> => {
+const createResponseTab = async (data: any, tabLabel: string, callId: number, checked?: boolean, isRenderedHtml?: boolean): Promise<string> => {
     const tabLabelForId = tabLabel.toLowerCase().replace(' ', '-');
+    const content = isRenderedHtml
+        ? `<div class="pw-html-render" id="res-${tabLabelForId}-${callId}" data-tab-type="res-${tabLabelForId}">${data}</div>`
+        : `<pre class="hljs" id="res-${tabLabelForId}-${callId}" data-tab-type="res-${tabLabelForId}">${data}</pre>`;
     return ` ${(data !== undefined) ?
         `<input type="radio" name="pw-res-data-tabs-${callId}" id="pw-res-${tabLabelForId}-${callId}" ${checked ? 'checked="checked"' : ''}>
         <label for="pw-res-${tabLabelForId}-${callId}" class="property pw-tab-label">${tabLabel.toUpperCase()}</label>
         <div class="pw-tab-content">
-            <pre class="hljs" id="res-${tabLabelForId}-${callId}" data-tab-type="res-${tabLabelForId}">${data}</pre>
+            ${content}
         </div>` : ''}`
 }
 
@@ -403,61 +365,47 @@ const formatText = (text: string, language: string = 'plaintext'): string => {
 }
 
 /**
- * Creates an HTML string for a rendered HTML response tab that displays HTML in an iframe.
+ * Sanitizes untrusted response HTML with DOMPurify before it is rendered, stripping `<script>`
+ * tags, inline event handler attributes, `javascript:` URIs, and other constructs that could
+ * execute code or navigate the page. `<iframe>`/`<object>`/`<embed>`/`<base>`/`<meta>` are
+ * additionally forbidden outright, since this plugin never needs them to display a response body.
+ *
+ * @param html - The raw HTML content to sanitize.
+ * @returns The sanitized HTML string.
+ */
+const sanitizeHtmlForRender = (html: string): string => {
+    return DOMPurify.sanitize(html, {
+        FORBID_TAGS: ['iframe', 'object', 'embed', 'base', 'meta'],
+        FORBID_ATTR: ['srcdoc'],
+    });
+}
+
+/**
+ * Wraps sanitized HTML content in a declarative Shadow DOM fragment so it renders visually as a
+ * real (mini) page - preserving its own layout/styles - without leaking those styles onto the
+ * surrounding report. 
+ * Being pure markup (no JS needed to attach the shadow root), it renders identically in the
+ * live Playwright UI, inside HTML Report, attachments, and Trace Viewer DOM snapshots.
  *
  * @param htmlContent - The raw HTML content to render.
- * @param tabLabel - The label for the tab.
- * @param callId - The unique identifier for the call.
- * @param checked - Optional. If `true`, the tab will be marked as checked. Defaults to `false`.
- * @returns A promise that resolves to an HTML string representing the rendered HTML tab.
+ * @returns An HTML string containing the shadow-DOM-wrapped content, or an empty string if there is nothing to render.
  */
-const createResponseTabRendered = async (htmlContent: string, tabLabel: string, callId: number, checked?: boolean): Promise<string> => {
-    const tabLabelForId = tabLabel.toLowerCase().replace(' ', '-');
-
+const createRenderedHtmlContent = (htmlContent: string): string => {
     if (!htmlContent) {
         return '';
     }
 
-    const iframeId = `res-${tabLabelForId}-${callId}`;
-    const dataContainerId = `data-container-${iframeId}`;
+    const sanitizedHtml = sanitizeHtmlForRender(htmlContent);
 
-    // Encode HTML content to base64 for storage in data attribute
-    // Buffer is always available in Node.js environment
-    let base64Html = '';
-    try {
-        base64Html = Buffer.from(htmlContent, 'utf8').toString('base64');
-    } catch (e) {
-        console.warn('Failed to encode HTML to base64:', e);
-    }
-
-    // Create iframe with hidden container storing base64 HTML
-    // The iframe will be loaded via page.evaluate() in addApiCardToUI
-    // Inline script kept as fallback for immediate loading
-    return ` <input type="radio" name="pw-res-data-tabs-${callId}" id="pw-res-${tabLabelForId}-${callId}" ${checked ? 'checked="checked"' : ''}>
-        <label for="pw-res-${tabLabelForId}-${callId}" class="property pw-tab-label">${tabLabel.toUpperCase()}</label>
-        <div class="pw-tab-content">
-            <div id="${dataContainerId}" data-html-base64="${base64Html}" style="display: none;"></div>
-            <iframe id="${iframeId}" class="pw-html-render-frame" style="width: 100%; min-height: 400px; border: 1px solid #ddd; border-radius: 4px; background: white;"></iframe>
-            <script>
-                (function() {
-                    try {
-                        var container = document.getElementById('${dataContainerId}');
-                        var iframe = document.getElementById('${iframeId}');
-                        var base64 = container?.getAttribute('data-html-base64');
-                        if (base64 && iframe && !iframe.src) {
-                            var binaryString = atob(base64);
-                            var bytes = new Uint8Array(binaryString.length);
-                            for (var i = 0; i < binaryString.length; i++) {
-                                bytes[i] = binaryString.charCodeAt(i);
-                            }
-                            iframe.src = URL.createObjectURL(new Blob([bytes], { type: 'text/html;charset=utf-8' }));
-                        }
-                    } catch (e) {
-                        console.error('Error loading HTML in iframe:', e);
-                    }
-                })();
-            </script>
-        </div>`;
+    return `<div class="pw-html-render-host">
+        <template shadowrootmode="open">
+            <style>
+                :host { all: initial; display: block; }
+                html, body { margin: 0; padding: 8px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1a1a1a; background: #ffffff; }
+            </style>
+            ${sanitizedHtml}
+        </template>
+    </div>`;
 }
 
 
@@ -496,7 +444,8 @@ const inLineStyles = `<style>
     .hljs-addition, .hljs-attribute, .hljs-literal, .hljs-section, .hljs-string, .hljs-template-tag, .hljs-template-variable, .hljs-title, .hljs-type { color: ${colorScheme.cardDataStrColor}; }
     .hljs-built_in, .hljs-keyword, .hljs-name, .hljs-selector-tag, .hljs-tag { color: ${colorScheme.cardDataBoolean}; }
     
-    .pw-html-render-frame { width: 100%; min-height: 400px; max-height: 800px; border: 1px solid ${colorScheme.cardDataBackground}; border-radius: 6px; margin: 1px 0 15px 10px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .pw-html-render { margin: 1px 0 15px 10px; }
+    .pw-html-render-host { display: block; width: 100%; max-height: 800px; overflow: auto; border: 1px solid ${colorScheme.cardDataBackground}; border-radius: 6px; background: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 </style>`
 
 export { addApiCardToUI }
