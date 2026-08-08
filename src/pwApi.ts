@@ -203,9 +203,32 @@ class pwApi {
 
             // Form the request data object for representation on the UI
             const status = response.status();
-            let body
-            if ((await response.text()) !== "") {
-                body = await response.json();
+            let body: any;
+            const contentType = response.headers()['content-type'] || '';
+            const responseText = await response.text();
+
+            if (responseText !== "") {
+                // Check if response is JSON based on content-type or try to parse it
+                if (contentType.includes('application/json')) {
+                    try {
+                        body = JSON.parse(responseText);
+                    } catch (e) {
+                        // If JSON parsing fails, treat as text
+                        body = { _rawText: responseText, _contentType: contentType || 'text/plain' };
+                    }
+                } else {
+                    // Detect HTML by checking if it starts with HTML tags
+                    const trimmedText = responseText.trim();
+                    const isHtml = trimmedText.startsWith('<!DOCTYPE') ||
+                        trimmedText.startsWith('<html') ||
+                        trimmedText.startsWith('<?xml');
+
+                    // For HTML, XML, or other text content, store as text with metadata
+                    const detectedContentType = isHtml
+                        ? (contentType || 'text/html')
+                        : (contentType || 'text/plain');
+                    body = { _rawText: responseText, _contentType: detectedContentType };
+                }
             }
 
             const responseData: ResponseDataInterface = {
@@ -224,7 +247,7 @@ class pwApi {
             return null;
         }
 
-        
+
     }
 
 }

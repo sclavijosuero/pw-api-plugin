@@ -2,6 +2,10 @@ import type { RequestDataInterface, ResponseDataInterface } from './types.js';
 
 
 import hljs from 'highlight.js/lib/common';
+// @ts-ignore - js-beautify doesn't have type definitions
+import * as jsBeautify from 'js-beautify';
+// @ts-ignore - isomorphic-dompurify doesn't ship type definitions
+import DOMPurify from 'isomorphic-dompurify';
 import * as packageJSON from '../package.json'
 import { Page, test } from '@playwright/test';
 
@@ -35,18 +39,8 @@ const addApiCardToUI = async (requestData: RequestDataInterface, responseData: R
     const apiCallHtml = await createApiCallHtml(requestData, responseData);
 
     if (page && process.env.LOG_API_UI !== 'false') {
-
-        // Add HTM of each API call to the specific Action
         const html = await createPageHtml(apiCallHtml);
-        await page.setContent(html);
-
-        // Add API at the end of the Playwright UI page
-        // const currentHtml = await page.content();
-        // if (currentHtml === emptyPageHtml) {
-        //     html = await createPageHtml(apiCallHtml);
-        // } else {
-        //     html = await addApiCallHtml(currentHtml, apiCallHtml);
-        // }
+        await page.setContent(html, { waitUntil: 'domcontentloaded' });
     }
 
 }
@@ -133,7 +127,7 @@ const createApiCallHtmlRequest = async (requestData: RequestDataInterface, callI
         <label class="property">URL</label>
         <pre class="hljs pw-api-hljs">${url}</b></pre>
         <div class="pw-req-data-tabs-${callId} pw-data-tabs">
-            ${await createRequestTab(requestBody, 'BODY', callId, true) /* Open BODY tab by default */ }
+            ${await createRequestTab(requestBody, 'BODY', callId, true) /* Open BODY tab by default */}
             ${await createRequestTab(requestHeaders, 'HEADERS', callId)}
             ${await createRequestTab(requestParams, 'PARAMS', callId)}
             ${await createRequestTab(requestAuth, 'HTTP BASIC AUTH', callId)}
@@ -176,17 +170,55 @@ const createApiCallHtmlResponse = async (responseData: ResponseDataInterface, ca
     const statusClass = responseData.statusClass;
     const statusText = responseData.statusText;
     const responseHeaders = responseData.headers ? formatJson(responseData.headers) : undefined;
-    const responseBody = responseData.body ? formatJson(responseData.body) : undefined;
+
+    // The BODY tab should show any type of response: rendered HTML content
+    // or formatted/highlighted text (JSON, XML, plain text, etc).
+    let responseBody: string | undefined;
+    let isHtmlResponse = false;
+    if (responseData.body) {
+        if ((responseData.body as any)._rawText !== undefined && (responseData.body as any)._contentType !== undefined) {
+            // This is HTML/text content
+            const contentType = (responseData.body as any)._contentType;
+            const rawText = (responseData.body as any)._rawText;
+            const trimmedText = rawText.trim();
+
+            isHtmlResponse = contentType.includes('html') ||
+                trimmedText.startsWith('<!DOCTYPE') ||
+                trimmedText.startsWith('<html');
+
+            if (isHtmlResponse) {
+                responseBody = createRenderedHtmlContent(rawText);
+            } else {
+                // Determine language for syntax highlighting
+                let language = 'plaintext';
+                if (contentType.includes('xml') || trimmedText.startsWith('<?xml')) {
+                    language = 'xml';
+                } else if (contentType.includes('css')) {
+                    language = 'css';
+                } else if (contentType.includes('javascript')) {
+                    language = 'javascript';
+                }
+                responseBody = formatText(rawText, language);
+            }
+        } else {
+            // This is regular JSON
+            responseBody = formatJson(responseData.body);
+        }
+    }
+
     const responseDuration = responseData.duration;
-    const durationMsg = responseDuration ? 'Duration aprox. ' + (responseDuration < 1000 ? `${responseDuration}ms` : `${(responseDuration / 1000).toFixed(2)}s`) : ''
+    const durationMsg = responseDuration ? 'Duration aprox. ' + (responseDuration < 1000 ? `${responseDuration}ms` : `${(responseDuration / 1000).toFixed(2)}s`) : '';
+
+    let tabsHtml = '';
+    tabsHtml += await createResponseTab(responseBody, 'BODY', callId, true, isHtmlResponse) /* Open BODY tab by default */;
+    tabsHtml += await createResponseTab(responseHeaders, 'HEADERS', callId);
 
     return `<div class="pw-api-response">
         <label class="title">RESPONSE - </label>
         <label class="title-property pw-api-${statusClass}">(STATUS: ${status} - ${statusText})</label><label class="title-property"> - ${durationMsg}</label>
         <br>
         <div class="pw-res-data-tabs-${callId} pw-data-tabs">
-            ${await createResponseTab(responseBody, 'BODY', callId, true) /* Open BODY tab by default */ }
-            ${await createResponseTab(responseHeaders, 'HEADERS', callId)}
+            ${tabsHtml}
          </div>
     </div>`
 }
@@ -198,15 +230,19 @@ const createApiCallHtmlResponse = async (responseData: ResponseDataInterface, ca
  * @param tabLabel - The label for the tab.
  * @param callId - The unique identifier for the call.
  * @param checked - Optional. If `true`, the tab will be marked as checked. Defaults to `false`.
+ * @param isRenderedHtml - Optional. If `true`, `data` is already-safe markup to render as-is. Defaults to `false`.
  * @returns A promise that resolves to an HTML string representing the response tab.
  */
-const createResponseTab = async (data: any, tabLabel: string, callId: number, checked?: boolean): Promise<string> => {
+const createResponseTab = async (data: any, tabLabel: string, callId: number, checked?: boolean, isRenderedHtml?: boolean): Promise<string> => {
     const tabLabelForId = tabLabel.toLowerCase().replace(' ', '-');
+    const content = isRenderedHtml
+        ? `<div class="pw-html-render" id="res-${tabLabelForId}-${callId}" data-tab-type="res-${tabLabelForId}">${data}</div>`
+        : `<pre class="hljs" id="res-${tabLabelForId}-${callId}" data-tab-type="res-${tabLabelForId}">${data}</pre>`;
     return ` ${(data !== undefined) ?
         `<input type="radio" name="pw-res-data-tabs-${callId}" id="pw-res-${tabLabelForId}-${callId}" ${checked ? 'checked="checked"' : ''}>
         <label for="pw-res-${tabLabelForId}-${callId}" class="property pw-tab-label">${tabLabel.toUpperCase()}</label>
         <div class="pw-tab-content">
-            <pre class="hljs" id="res-${tabLabelForId}-${callId}" data-tab-type="res-${tabLabelForId}">${data}</pre>
+            ${content}
         </div>` : ''}`
 }
 
@@ -261,6 +297,120 @@ const formatJson = (jsonObject: object): string => {
     }).value;
 }
 
+/**
+ * Formats text content (HTML, XML, plain text) into a highlighted string.
+ * Uses js-beautify to beautify the code first, then applies syntax highlighting.
+ *
+ * @param text - The text content to format.
+ * @param language - The language for syntax highlighting (e.g., 'html', 'xml', 'plaintext').
+ * @returns The formatted text string with syntax highlighting.
+ */
+const formatText = (text: string, language: string = 'plaintext'): string => {
+    let beautifiedText = text;
+
+    // Use js-beautify to beautify the code based on language
+    try {
+        if (language === 'html' || language === 'xml') {
+            beautifiedText = jsBeautify.html(text, {
+                indent_size: 2,
+                indent_char: ' ',
+                max_preserve_newlines: 2,
+                preserve_newlines: true,
+                keep_array_indentation: false,
+                break_chained_methods: false,
+                indent_scripts: 'separate',
+                brace_style: 'collapse',
+                space_before_conditional: true,
+                unescape_strings: false,
+                wrap_line_length: 120,
+                end_with_newline: false,
+                indent_inner_html: true,
+                indent_body_inner_html: true,
+                indent_head_inner_html: true,
+                extra_liners: ['head', 'body', '/html']
+            });
+        } else if (language === 'css') {
+            beautifiedText = jsBeautify.css(text, {
+                indent_size: 2,
+                indent_char: ' ',
+                max_preserve_newlines: 2,
+                preserve_newlines: true,
+                wrap_line_length: 120,
+                end_with_newline: false
+            });
+        } else if (language === 'javascript') {
+            beautifiedText = jsBeautify.js(text, {
+                indent_size: 2,
+                indent_char: ' ',
+                max_preserve_newlines: 2,
+                preserve_newlines: true,
+                keep_array_indentation: false,
+                break_chained_methods: false,
+                brace_style: 'collapse',
+                space_before_conditional: true,
+                unescape_strings: false,
+                wrap_line_length: 120,
+                end_with_newline: false
+            });
+        }
+    } catch (e) {
+        // If beautification fails, use original text
+        beautifiedText = text;
+    }
+
+    // Apply syntax highlighting
+    return hljs.highlight(beautifiedText, {
+        language: language,
+    }).value;
+}
+
+/**
+ * Sanitizes untrusted response HTML with DOMPurify before it is rendered, stripping `<script>`
+ * tags, inline event handler attributes, `javascript:` URIs, and other constructs that could
+ * execute code or navigate the page. `<iframe>`/`<object>`/`<embed>`/`<base>`/`<meta>` are
+ * additionally forbidden outright, since this plugin never needs them to display a response body.
+ *
+ * @param html - The raw HTML content to sanitize.
+ * @returns The sanitized HTML string.
+ */
+const sanitizeHtmlForRender = (html: string): string => {
+    return DOMPurify.sanitize(html, {
+        FORBID_TAGS: ['iframe', 'object', 'embed', 'base', 'meta'],
+        FORBID_ATTR: ['srcdoc'],
+    });
+}
+
+/**
+ * Wraps sanitized HTML content in a declarative Shadow DOM fragment so it renders visually as a
+ * real (mini) page - preserving its own layout/styles - without leaking those styles onto the
+ * surrounding report. 
+ * Being pure markup (no JS needed to attach the shadow root), it renders identically in the
+ * live Playwright UI, inside HTML Report, attachments, and Trace Viewer DOM snapshots.
+ *
+ * @param htmlContent - The raw HTML content to render.
+ * @returns An HTML string containing the shadow-DOM-wrapped content, or an empty string if there is nothing to render.
+ */
+const createRenderedHtmlContent = (htmlContent: string): string => {
+    if (!htmlContent) {
+        return '';
+    }
+
+    const sanitizedHtml = sanitizeHtmlForRender(htmlContent);
+
+    // DOMPurify drops <html>/<head>/<body> wrapper tags (and any attributes on them), keeping only inner content.
+    // So the color/background reset must live on `:host` - the one element guaranteed to exist.
+    // `html, body` is kept only as a no-op-safe pass-through for the rare case those tags do survive.
+    return `<div class="pw-html-render-host">
+        <template shadowrootmode="open">
+            <style>
+                :host { all: initial; display: block; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: ${colorScheme.cardDataColor}; background: ${colorScheme.cardDataBackground}; padding: 8px; }
+                html, body { margin: 0; color: inherit; background: inherit; }
+            </style>
+            ${sanitizedHtml}
+        </template>
+    </div>`;
+}
+
 
 /**
  * Inline styles for the application.
@@ -296,6 +446,9 @@ const inLineStyles = `<style>
     .hljs-attr { color: ${colorScheme.cardDataAttrColor}; }
     .hljs-addition, .hljs-attribute, .hljs-literal, .hljs-section, .hljs-string, .hljs-template-tag, .hljs-template-variable, .hljs-title, .hljs-type { color: ${colorScheme.cardDataStrColor}; }
     .hljs-built_in, .hljs-keyword, .hljs-name, .hljs-selector-tag, .hljs-tag { color: ${colorScheme.cardDataBoolean}; }
+    
+    .pw-html-render { margin: 1px 0 15px 10px; }
+    .pw-html-render-host { display: block; width: 100%; max-height: 800px; overflow: auto; border: 1px solid ${colorScheme.cardDataBackground}; border-radius: 6px; background: ${colorScheme.cardDataBackground}; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 </style>`
 
 export { addApiCardToUI }
