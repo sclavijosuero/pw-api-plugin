@@ -397,11 +397,14 @@ const createRenderedHtmlContent = (htmlContent: string): string => {
 
     const sanitizedHtml = sanitizeHtmlForRender(htmlContent);
 
+    // DOMPurify drops <html>/<head>/<body> wrapper tags (and any attributes on them), keeping only inner content.
+    // So the color/background reset must live on `:host` - the one element guaranteed to exist.
+    // `html, body` is kept only as a no-op-safe pass-through for the rare case those tags do survive.
     return `<div class="pw-html-render-host">
         <template shadowrootmode="open">
             <style>
-                :host { all: initial; display: block; }
-                html, body { margin: 0; padding: 8px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1a1a1a; background: #ffffff; }
+                :host { all: initial; display: block; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: ${colorScheme.cardDataColor}; background: ${colorScheme.cardDataBackground}; padding: 8px; }
+                html, body { margin: 0; color: inherit; background: inherit; }
             </style>
             ${sanitizedHtml}
         </template>
@@ -445,7 +448,7 @@ const inLineStyles = `<style>
     .hljs-built_in, .hljs-keyword, .hljs-name, .hljs-selector-tag, .hljs-tag { color: ${colorScheme.cardDataBoolean}; }
     
     .pw-html-render { margin: 1px 0 15px 10px; }
-    .pw-html-render-host { display: block; width: 100%; max-height: 800px; overflow: auto; border: 1px solid ${colorScheme.cardDataBackground}; border-radius: 6px; background: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .pw-html-render-host { display: block; width: 100%; max-height: 800px; overflow: auto; border: 1px solid ${colorScheme.cardDataBackground}; border-radius: 6px; background: ${colorScheme.cardDataBackground}; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 </style>`
 
 export { addApiCardToUI }
