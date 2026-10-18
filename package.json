@@ -17,9 +17,11 @@
   ],
   "scripts": {
     "prebuild": "rm -rf dist",
-    "build": "tsc",
+    "build": "tsc && npm run copy-assets",
+    "copy-assets": "node -e \"const fs=require('fs'); fs.cpSync('src/color-scheme','dist/src/color-scheme',{recursive:true}); fs.copyFileSync('src/types.d.ts','dist/src/types.d.ts');\"",
     "prerelease": "npm run build",
-    "release": "npm cache clean --force && npm version patch && npm publish --force"
+    "release": "npm cache clean --force && npm version patch && npm publish --force",
+    "yalc:build": "npm run build && yalc publish"
   },
   "repository": {
     "type": "git",
@@ -44,6 +46,8 @@
   "dependencies": {
     "@types/node": "^22.13.5",
     "axios": "^1.8.3",
-    "highlight.js": "^11.11.1"
+    "highlight.js": "^11.11.1",
+    "isomorphic-dompurify": "^3.19.0",
+    "js-beautify": "^1.15.4"
   }
 }

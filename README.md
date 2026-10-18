@@ -913,6 +913,26 @@ And if you like the project but just don't have the time to contribute, that's f
 
 Thank you for your support!
 
+### Local Plugin Testing
+You can use [yalc](https://github.com/wclr/yalc) to use your local changes as the package in another repository without needing to publish to NPM.
+
+<details>
+<summary>Expand / Collapse</summary>
+
+1. Install yalc globally with `npm i yalc -g` (globally since you'll use it across repositories, so it shouldn't be a dev dependency).
+
+2. Run `yalc link pw-api-plugin` in the root of your **local automation repository** (only necessary to do this once).
+
+3. Add `.yalc` and `yalc.lock` to the `.gitignore` file of your **local automation repository**.
+
+4. Run `npm run yalc:build` in the root of your local `pw-api-plugin` repository (and do this every time you want to make your latest changes available).
+
+5. Run `yalc update` in your **local automation repository**, do this every time you re-build the `pw-api-plugin`.
+
+6. If you want to stop using yalc, run `yalc retreat --all` in the root of automation repository. And if you want to start using it again, run `yalc restore --all`.
+
+</details>
+
 
 ## COLABORATORS
 

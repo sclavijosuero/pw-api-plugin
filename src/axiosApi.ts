@@ -307,12 +307,40 @@ class axiosApi {
         // Form the request data object for representation on the UI
         const status = response.status;
 
+        // Axios only auto-parses JSON: a JSON body becomes an object/array, while non-JSON bodies
+        // (HTML error pages, plain text, XML, etc.) are left as a raw string in response.data.
+        // Normalize that raw string the same way pwApi does, so displayUi can render it consistently.
+        let body: any = response.data;
+        if (typeof body === 'string' && body !== '') {
+            const contentType = (response.headers?.['content-type'] as string) || '';
+
+            if (contentType.includes('application/json')) {
+                try {
+                    body = JSON.parse(body);
+                } catch (e) {
+                    // If JSON parsing fails, treat as text
+                    body = { _rawText: body, _contentType: contentType || 'text/plain' };
+                }
+            } else {
+                // Detect HTML/XML by checking if it starts with the corresponding tags
+                const trimmedText = body.trim();
+                const isHtml = trimmedText.startsWith('<!DOCTYPE') ||
+                    trimmedText.startsWith('<html') ||
+                    trimmedText.startsWith('<?xml');
+
+                const detectedContentType = isHtml
+                    ? (contentType || 'text/html')
+                    : (contentType || 'text/plain');
+                body = { _rawText: body, _contentType: detectedContentType };
+            }
+        }
+
         const responseData: ResponseDataInterface = {
             status,
             statusClass: status.toString().charAt(0) + 'xx', // Used for give color style to status code. (Eg: '2xx', '4xx', '5xx')
             statusText: response.statusText,
             headers: response.headers,
-            body: response.data,
+            body,
             duration
         };
 
